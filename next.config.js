@@ -1,9 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   typedRoutes: true,
-  eslint: {
-    ignoreDuringBuilds: true, // ✅ build ke time ESLint ko ignore karega
-  },
   images: {
     remotePatterns: [
       {
