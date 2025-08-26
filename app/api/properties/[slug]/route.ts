@@ -7,12 +7,12 @@ import type { ApiResponse } from '@/types'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ slug: string }> }
+  { params }: { params: { slug: string } }
 ) {
   try {
     await dbConnect()
 
-    const { slug } = await params
+    const { slug } = params
     const sanitizedSlug = sanitizeHtml(slug)
 
     const property = await Property.findOne({ slug: sanitizedSlug, status: 'active' })

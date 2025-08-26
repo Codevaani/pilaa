@@ -257,7 +257,7 @@ function SearchResults({ hotels, loading, totalResults }: { hotels: any[], loadi
 
 export default function SearchPage() {
   const searchParams = useSearchParams()
-  const [, setShowMobileFilters] = useState(false)
+  const [showMobileFilters, setShowMobileFilters] = useState(false)
   const [hotels, setHotels] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [totalResults, setTotalResults] = useState(0)

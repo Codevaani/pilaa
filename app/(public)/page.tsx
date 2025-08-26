@@ -159,7 +159,7 @@ function WhyChooseUs() {
     {
       icon: Shield,
       title: "Best Price Guarantee",
-      description: "We guarantee the best prices. Find a lower price and we&apos;ll match it."
+      description: "We guarantee the best prices. Find a lower price and we'll match it."
     },
     {
       icon: Award,
@@ -215,7 +215,7 @@ function PartnerCTA() {
             </h2>
             <p className="text-primary-foreground/90 text-lg mb-8 max-w-2xl mx-auto">
               Join thousands of property owners who are earning more by listing their properties on Motel. 
-              It&apos;s free to get started!
+              It's free to get started!
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" variant="secondary" asChild>

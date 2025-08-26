@@ -52,7 +52,7 @@ export default function AccountLayout({
                   {sidebarItems.map((item) => {
                     const isActive = pathname === item.href
                     return (
-                      <Link key={item.href} href={item.href as any}>
+                      <Link key={item.href} href={item.href}>
                         <Button
                           variant={isActive ? "default" : "ghost"}
                           className="w-full justify-start"
