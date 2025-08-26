@@ -1,4 +1,5 @@
 "use client"
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -11,32 +12,32 @@ import { Footer } from "@/components/footer"
 const sidebarItems = [
   {
     title: "Dashboard",
-    href: "/partner",
+    href: "/partner" as const,
     icon: LayoutDashboard,
   },
   {
     title: "My Properties",
-    href: "/partner/properties",
+    href: "/partner/properties" as const,
     icon: Building,
   },
   {
     title: "Add Property",
-    href: "/partner/add-property",
+    href: "/partner/add-property" as const,
     icon: Plus,
   },
   {
     title: "Bookings",
-    href: "/partner/bookings",
+    href: "/partner/bookings" as const,
     icon: Calendar,
   },
   {
     title: "Analytics",
-    href: "/partner/analytics",
+    href: "/partner/analytics" as const,
     icon: BarChart3,
   },
   {
     title: "Settings",
-    href: "/partner/settings",
+    href: "/partner/settings" as const,
     icon: Settings,
   },
 ]
@@ -67,7 +68,7 @@ export default function PartnerLayout({
                   {sidebarItems.map((item) => {
                     const isActive = pathname === item.href
                     return (
-                      <Link key={item.href} href={item.href}>
+                      <Link key={item.href} href={item.href as any}>
                         <Button
                           variant={isActive ? "default" : "ghost"}
                           className="w-full justify-start"

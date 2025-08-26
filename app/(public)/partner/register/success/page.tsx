@@ -1,4 +1,5 @@
 "use client"
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
@@ -162,7 +163,7 @@ export default function PartnerRegistrationSuccessPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {verificationSteps.map((step, index) => (
+                {verificationSteps.map((step) => (
                   <div key={step.step} className="flex items-start space-x-4">
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
                       step.status === 'completed' 
@@ -197,11 +198,12 @@ export default function PartnerRegistrationSuccessPage() {
         </div>
 
         {/* What's Next */}
+        {/* What&apos;s Next */}
         <Card className="max-w-4xl mx-auto mt-8">
           <CardHeader>
             <CardTitle>What Happens Next?</CardTitle>
             <CardDescription>
-              Here's what you can expect during the review process
+              Here&apos;s what you can expect during the review process
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -264,13 +266,13 @@ export default function PartnerRegistrationSuccessPage() {
         <div className="text-center mt-12">
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" asChild>
-              <Link href="/">
+              <Link href={"/" as const}>
                 <Home className="h-4 w-4 mr-2" />
                 Back to Home
               </Link>
             </Button>
             <Button size="lg" variant="outline" asChild>
-              <Link href="/contact">
+              <Link href={"/contact" as any}>
                 <MessageCircle className="h-4 w-4 mr-2" />
                 Contact Support
               </Link>

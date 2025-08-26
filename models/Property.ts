@@ -1,4 +1,32 @@
-import mongoose from 'mongoose'
+import mongoose, { Document } from 'mongoose';
+
+export interface IProperty extends Document {
+  name: string;
+  slug: string;
+  description: string;
+  images: string[];
+  address: {
+    street: string;
+    city: string;
+    state: string;
+    country: string;
+    zipCode: string;
+    coordinates: {
+      lat: number;
+      lng: number;
+    };
+  };
+  amenities: string[];
+  propertyType: 'hotel' | 'resort' | 'villa' | 'apartment';
+  rating: number;
+  reviewCount: number;
+  priceRange: {
+    min: number;
+    max: number;
+  };
+  partnerId: string;
+  status: 'active' | 'pending' | 'suspended';
+}
 
 const PropertySchema = new mongoose.Schema({
   name: { type: String, required: true },
@@ -28,6 +56,6 @@ const PropertySchema = new mongoose.Schema({
   status: { type: String, enum: ['active', 'pending', 'suspended'], default: 'pending' }
 }, {
   timestamps: true
-})
+});
 
-export default mongoose.models.Property || mongoose.model('Property', PropertySchema)
+export default mongoose.models.Property || mongoose.model<IProperty>('Property', PropertySchema);

@@ -1,18 +1,47 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
+import Link from "next/link"
 import { useUser } from "@clerk/nextjs"
 import { sanitizeLog } from "@/lib/security"
 import { Calendar, MapPin, Users, Star, Download, Eye, MessageCircle, RefreshCw } from "lucide-react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Skeleton } from "@/components/ui/skeleton"
 import Image from "next/image"
 
-const [bookings, setBookings] = useState<any[]>([])
-  const [bookingStats, setBookingStats] = useState({
+interface Booking {
+  id: string;
+  propertyImage: string;
+  propertyName: string;
+  location: string;
+  confirmationNumber: string;
+  checkIn: string;
+  checkOut: string;
+  guests: {
+    adults: number;
+    children: number;
+  };
+  roomType: string;
+  totalAmount: number;
+  status: string;
+  rating?: number;
+}
+
+interface BookingStats {
+  total: number;
+  upcoming: number;
+  completed: number;
+  cancelled: number;
+  totalSpent: number;
+}
+
+export default function MyBookingsPage() {
+  const { user, isLoaded } = useUser()
+  const [bookings, setBookings] = useState<Booking[]>([])
+  const [bookingStats, setBookingStats] = useState<BookingStats>({
     total: 0,
     upcoming: 0,
     completed: 0,
@@ -20,8 +49,9 @@ const [bookings, setBookings] = useState<any[]>([])
     totalSpent: 0,
   })
   const [loading, setLoading] = useState(true)
+  const [selectedTab, setSelectedTab] = useState("all")
 
-  const fetchBookings = async () => {
+  const fetchBookings = useCallback(async () => {
     try {
       const response = await fetch('/api/user/bookings')
       if (response.ok) {
@@ -34,7 +64,7 @@ const [bookings, setBookings] = useState<any[]>([])
     } finally {
       setLoading(false)
     }
-  }
+  }, [bookingStats])
 
   useEffect(() => {
     if (user) {
@@ -42,14 +72,7 @@ const [bookings, setBookings] = useState<any[]>([])
     } else {
       setLoading(false)
     }
-  }, [user])
-
-export default function MyBookingsPage() {
-  const { user, isLoaded } = useUser()
-  const [selectedTab, setSelectedTab] = useState("all")
-  const [isLoading, setIsLoading] = useState(true)
-
-
+  }, [user, fetchBookings])
 
   const getStatusBadgeVariant = (status: string) => {
     switch (status) {
@@ -62,20 +85,6 @@ export default function MyBookingsPage() {
         return 'destructive'
       default:
         return 'outline'
-    }
-  }
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'confirmed':
-      case 'upcoming':
-        return 'text-primary'
-      case 'completed':
-        return 'text-green-600'
-      case 'cancelled':
-        return 'text-red-600'
-      default:
-        return 'text-muted-foreground'
     }
   }
 
@@ -302,7 +311,7 @@ export default function MyBookingsPage() {
                     : `No ${selectedTab} bookings found`}
                 </p>
                 <Button asChild>
-                  <a href="/search">Browse Hotels</a>
+                  <Link href="/search">Browse Hotels</Link>
                 </Button>
               </CardContent>
             </Card>

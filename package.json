@@ -2,11 +2,12 @@
   "name": "motel-booking-platform",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
     "type-check": "tsc --noEmit",
     "seed": "node scripts/seed.js"
   },
@@ -63,6 +64,7 @@
     "zod": "^3.22.0"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.3.1",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "eslint": "^8",

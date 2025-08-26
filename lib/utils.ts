@@ -39,7 +39,7 @@ export function calculateNights(checkIn: Date, checkOut: Date): number {
   return Math.ceil(diffTime / (1000 * 60 * 60 * 24))
 }
 
-export function debounce<T extends (...args: any[]) => any>(
+export function debounce<T extends (...args: unknown[]) => unknown>(
   func: T,
   wait: number
 ): (...args: Parameters<T>) => void {

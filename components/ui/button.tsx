@@ -9,11 +9,14 @@ const Slot = React.forwardRef<
   React.HTMLAttributes<HTMLElement> & { children?: React.ReactNode }
 >(({ children, ...props }, ref) => {
   if (React.isValidElement(children)) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return React.cloneElement(children, {
       ...props,
-      ...children.props,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ...(children.props as any),
       ref,
-    })
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } as any)
   }
   return null
 })

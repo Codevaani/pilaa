@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useUser } from "@clerk/nextjs"
 import { 
   Building, 
@@ -11,12 +11,9 @@ import {
   Star, 
   MapPin, 
   Calendar,
-  Users,
   DollarSign,
   TrendingUp,
   Settings,
-  Trash2,
-  Copy,
   ExternalLink
 } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -27,15 +24,34 @@ import { Skeleton } from "@/components/ui/skeleton"
 import Image from "next/image"
 import Link from "next/link"
 
+interface Property {
+  id: string;
+  name: string;
+  location: string;
+  status: string;
+  type: string;
+  images: string[];
+  rating: number;
+  reviewCount: number;
+  occupancyRate: number;
+  availableRooms: number;
+  totalRooms: number;
+  averagePrice: number;
+  amenities: string[];
+  lastUpdated: string;
+  slug: string;
+  monthlyRevenue: number;
+}
+
 export default function MyPropertiesPage() {
   const { user, isLoaded } = useUser()
-  const [properties, setProperties] = useState<any[]>([])
+  const [properties, setProperties] = useState<Property[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
 
-  const fetchProperties = async () => {
+  const fetchProperties = useCallback(async () => {
     try {
       const response = await fetch('/api/partner/properties')
       if (response.ok) {
@@ -47,7 +63,7 @@ export default function MyPropertiesPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
   useEffect(() => {
     if (user?.publicMetadata?.role === 'partner') {
@@ -55,7 +71,7 @@ export default function MyPropertiesPage() {
     } else {
       setLoading(false)
     }
-  }, [user])
+  }, [user, fetchProperties])
 
   const getStatusBadgeVariant = (status: string) => {
     switch (status) {
@@ -78,10 +94,7 @@ export default function MyPropertiesPage() {
     return matchesSearch && matchesStatus
   })
 
-  const handlePropertyAction = (propertyId: string, action: string) => {
-    console.log(`${action} property ${propertyId}`)
-    alert(`Property ${action} action performed!`)
-  }
+  
 
   const totalStats = {
     totalProperties: properties.length,

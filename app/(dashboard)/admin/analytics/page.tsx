@@ -1,19 +1,40 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useUser } from "@clerk/nextjs"
 import { TrendingUp, Users, Building, DollarSign, Calendar, Download } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
+interface AnalyticsData {
+  overview: {
+    totalRevenue: number;
+    totalBookings: number;
+    activeUsers: number;
+    totalProperties: number;
+  };
+  topProperties: {
+    name: string;
+    bookings: number;
+    revenue: string;
+  }[];
+  metrics: {
+    averageBookingValue: number;
+    conversionRate: string;
+    customerRetention: string;
+    averageRating: string;
+    occupancyRate: string;
+  };
+}
+
 export default function AdminAnalyticsPage() {
   const { user, isLoaded } = useUser()
-  const [analytics, setAnalytics] = useState<any>(null)
+  const [analytics, setAnalytics] = useState<AnalyticsData | null>(null)
   const [loading, setLoading] = useState(true)
   const [dateRange, setDateRange] = useState("30d")
 
-  const fetchAnalytics = async () => {
+  const fetchAnalytics = useCallback(async () => {
     try {
       const response = await fetch('/api/admin/analytics')
       if (response.ok) {
@@ -25,7 +46,7 @@ export default function AdminAnalyticsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
   useEffect(() => {
     if (user?.publicMetadata?.role === 'admin') {
@@ -33,7 +54,7 @@ export default function AdminAnalyticsPage() {
     } else {
       setLoading(false)
     }
-  }, [user])
+  }, [user, fetchAnalytics])
 
   if (!isLoaded || loading) {
     return (
@@ -191,7 +212,7 @@ export default function AdminAnalyticsPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {analytics?.topProperties?.map((property: any, index: number) => (
+                  {analytics?.topProperties?.map((property: { name: string; bookings: number; revenue: string }, index: number) => (
                     <div key={index} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
                       <div>
                         <p className="font-medium">{property.name}</p>

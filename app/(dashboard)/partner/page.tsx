@@ -1,12 +1,35 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
+import Link from "next/link"
 import { Building, DollarSign, Calendar, Users, Plus, Eye, Edit, TrendingUp, XCircle } from "lucide-react"
 import { useUser } from "@clerk/nextjs"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+
+interface Property {
+  id: string;
+  name: string;
+  location: string;
+  type: string;
+  status: string;
+  rooms: number;
+  revenue: number;
+  bookings: number;
+  occupancy: number;
+}
+
+interface RecentBooking {
+  id: string;
+  guestName: string;
+  property: string;
+  checkIn: string;
+  checkOut: string;
+  amount: number;
+  status: string;
+}
 
 export default function PartnerPanelPage() {
   const { user, isLoaded } = useUser()
@@ -18,11 +41,11 @@ export default function PartnerPanelPage() {
     averageRating: 0,
     thisMonthBookings: 0,
   })
-  const [properties, setProperties] = useState<any[]>([])
-  const [recentBookings, setRecentBookings] = useState<any[]>([])
+  const [properties, setProperties] = useState<Property[]>([])
+  const [recentBookings, setRecentBookings] = useState<RecentBooking[]>([])
   const [loading, setLoading] = useState(true)
 
-  const fetchPartnerData = async () => {
+  const fetchPartnerData = useCallback(async () => {
     try {
       const [statsRes, propertiesRes, bookingsRes] = await Promise.all([
         fetch('/api/partner/stats'),
@@ -49,7 +72,7 @@ export default function PartnerPanelPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [stats])
 
   useEffect(() => {
     if (user?.publicMetadata?.role === 'partner') {
@@ -57,7 +80,7 @@ export default function PartnerPanelPage() {
     } else {
       setLoading(false)
     }
-  }, [user])
+  }, [user, fetchPartnerData])
 
 
 
@@ -92,7 +115,7 @@ export default function PartnerPanelPage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-2">
               <Button asChild>
-                <a href="/partner/register">Become a Partner</a>
+                <Link href="/partner/register">Become a Partner</Link>
               </Button>
               <Button variant="outline" asChild>
                 <Link href="/">Go to Home</Link>
@@ -202,9 +225,6 @@ export default function PartnerPanelPage() {
           <Card>
             <CardHeader>
               <CardTitle>My Properties</CardTitle>
-              <CardDescription>
-                Manage your listed properties
-              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -259,9 +279,6 @@ export default function PartnerPanelPage() {
           <Card>
             <CardHeader>
               <CardTitle>Recent Bookings</CardTitle>
-              <CardDescription>
-                Latest bookings across all your properties
-              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -299,9 +316,6 @@ export default function PartnerPanelPage() {
           <Card>
             <CardHeader>
               <CardTitle>Analytics & Insights</CardTitle>
-              <CardDescription>
-                Performance metrics and business insights
-              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="text-center py-12">
@@ -321,9 +335,6 @@ export default function PartnerPanelPage() {
           <Card>
             <CardHeader>
               <CardTitle>Partner Settings</CardTitle>
-              <CardDescription>
-                Manage your partner account settings
-              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="text-center py-12">

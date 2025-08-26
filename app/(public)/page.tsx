@@ -1,13 +1,37 @@
 "use client"
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { Suspense, useState, useEffect } from "react"
+import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { Star, MapPin, Users, Shield, Award, Clock } from "lucide-react"
 import { SearchBar } from "@/components/search-bar"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Skeleton } from "@/components/ui/skeleton"
+import { Card, CardContent } from "@/components/ui/card"
+
+interface Destination {
+  _id: string;
+  city: string;
+  image: string;
+  count: number;
+}
+
+interface Hotel {
+  _id: string;
+  name: string;
+  slug: string;
+  images: string[];
+  address: {
+    city: string;
+    state: string;
+  };
+  rating: number;
+  reviewCount: number;
+  priceRange: {
+    min: number;
+    max: number;
+  };
+}
 
 function HeroSection() {
   return (
@@ -40,7 +64,7 @@ function HeroSection() {
 }
 
 function PopularDestinations() {
-  const [destinations, setDestinations] = useState<any[]>([])
+  const [destinations, setDestinations] = useState<Destination[]>([])
 
   useEffect(() => {
     fetch('/api/destinations')
@@ -59,7 +83,7 @@ function PopularDestinations() {
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {destinations.map((destination) => (
-            <Link key={destination._id} href={`/search?city=${destination.city}`}>
+            <Link key={destination._id} href={`/search?city=${encodeURIComponent(destination.city)}`}>
               <Card className="group cursor-pointer overflow-hidden hover:shadow-lg transition-all duration-300">
                 <div className="relative h-48">
                   <Image
@@ -84,7 +108,7 @@ function PopularDestinations() {
 }
 
 function FeaturedHotels() {
-  const [hotels, setHotels] = useState<any[]>([])
+  const [hotels, setHotels] = useState<Hotel[]>([])
 
   useEffect(() => {
     fetch('/api/properties?limit=3')
@@ -146,7 +170,7 @@ function FeaturedHotels() {
         
         <div className="text-center mt-8">
           <Button asChild size="lg">
-            <Link href="/search">View All Hotels</Link>
+            <Link href={"/search" as const}>View All Hotels</Link>
           </Button>
         </div>
       </div>
@@ -159,7 +183,7 @@ function WhyChooseUs() {
     {
       icon: Shield,
       title: "Best Price Guarantee",
-      description: "We guarantee the best prices. Find a lower price and we'll match it."
+      description: "We guarantee the best prices. Find a lower price and we&apos;ll match it."
     },
     {
       icon: Award,
@@ -215,14 +239,14 @@ function PartnerCTA() {
             </h2>
             <p className="text-primary-foreground/90 text-lg mb-8 max-w-2xl mx-auto">
               Join thousands of property owners who are earning more by listing their properties on Motel. 
-              It's free to get started!
+              It&apos;s free to get started!
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" variant="secondary" asChild>
-                <Link href="/partner/register">Become a Partner</Link>
+                <Link href={"/partner/register" as const}>Become a Partner</Link>
               </Button>
               <Button size="lg" variant="outline" className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary" asChild>
-                <Link href="/partner/learn-more">Learn More</Link>
+                <Link href={"/partner/learn-more" as any}>Learn More</Link>
               </Button>
             </div>
           </CardContent>

@@ -195,11 +195,11 @@ export default function RegisterPage() {
               />
               <label htmlFor="agreeToTerms" className="text-sm text-muted-foreground">
                 I agree to the{" "}
-                <Link href="/terms" className="text-primary hover:underline">
+                <Link href={{ pathname: "/terms" }} className="text-primary hover:underline">
                   Terms of Service
                 </Link>{" "}
                 and{" "}
-                <Link href="/privacy" className="text-primary hover:underline">
+                <Link href={{ pathname: "/privacy" }} className="text-primary hover:underline">
                   Privacy Policy
                 </Link>
               </label>
@@ -262,7 +262,7 @@ export default function RegisterPage() {
           {/* Sign in link */}
           <div className="mt-6 text-center text-sm">
             <span className="text-muted-foreground">Already have an account? </span>
-            <Link href="/auth/login" className="text-primary hover:underline font-medium">
+            <Link href={{ pathname: "/auth/login" }} className="text-primary hover:underline font-medium">
               Sign in
             </Link>
           </div>

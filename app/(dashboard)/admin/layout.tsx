@@ -63,7 +63,7 @@ export default function AdminLayout({
                   {sidebarItems.map((item) => {
                     const isActive = pathname === item.href
                     return (
-                      <Link key={item.href} href={item.href}>
+                      <Link key={item.href} href={{ pathname: item.href }}>
                         <Button
                           variant={isActive ? "default" : "ghost"}
                           className="w-full justify-start"

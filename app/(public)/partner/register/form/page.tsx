@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react"
 import { useRouter } from "next/navigation"
-import { Camera, Upload, User, Mail, Phone, FileText, CheckCircle, AlertCircle } from "lucide-react"
+import { Camera, User, Mail, Phone, FileText, CheckCircle, AlertCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -150,7 +150,7 @@ export default function PartnerRegistrationFormPage() {
     }
   }
 
-  const triggerFileInput = (ref: React.RefObject<HTMLInputElement>) => {
+  const triggerFileInput = (ref: React.RefObject<HTMLInputElement | null>) => {
     ref.current?.click()
   }
 

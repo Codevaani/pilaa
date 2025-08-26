@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Link from "next/link"
 import { Facebook, Twitter, Instagram, Linkedin, Mail, Phone, MapPin } from "lucide-react"
 
@@ -21,16 +22,16 @@ export function Footer() {
               Discover amazing places to stay with the best prices guaranteed.
             </p>
             <div className="flex space-x-4">
-              <Link href="#" className="text-muted-foreground hover:text-primary transition-colors">
+              <Link href={"/" as const} className="text-muted-foreground hover:text-primary transition-colors">
                 <Facebook className="h-5 w-5" />
               </Link>
-              <Link href="#" className="text-muted-foreground hover:text-primary transition-colors">
+              <Link href={"/" as const} className="text-muted-foreground hover:text-primary transition-colors">
                 <Twitter className="h-5 w-5" />
               </Link>
-              <Link href="#" className="text-muted-foreground hover:text-primary transition-colors">
+              <Link href={"/" as const} className="text-muted-foreground hover:text-primary transition-colors">
                 <Instagram className="h-5 w-5" />
               </Link>
-              <Link href="#" className="text-muted-foreground hover:text-primary transition-colors">
+              <Link href={"/" as const} className="text-muted-foreground hover:text-primary transition-colors">
                 <Linkedin className="h-5 w-5" />
               </Link>
             </div>
@@ -41,27 +42,27 @@ export function Footer() {
             <h3 className="font-semibold">Quick Links</h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link href="/about" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link href={"/about" as any} className="text-muted-foreground hover:text-primary transition-colors">
                   About Us
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link href={"/contact" as any} className="text-muted-foreground hover:text-primary transition-colors">
                   Contact
                 </Link>
               </li>
               <li>
-                <Link href="/careers" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link href={"/careers" as any} className="text-muted-foreground hover:text-primary transition-colors">
                   Careers
                 </Link>
               </li>
               <li>
-                <Link href="/blog" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link href={"/blog" as any} className="text-muted-foreground hover:text-primary transition-colors">
                   Blog
                 </Link>
               </li>
               <li>
-                <Link href="/help" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link href={"/help" as any} className="text-muted-foreground hover:text-primary transition-colors">
                   Help Center
                 </Link>
               </li>
@@ -73,22 +74,22 @@ export function Footer() {
             <h3 className="font-semibold">For Partners</h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link href="/partner/register" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link href={"/partner/register" as const} className="text-muted-foreground hover:text-primary transition-colors">
                   List Your Property
                 </Link>
               </li>
               <li>
-                <Link href="/partner/login" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link href={"/partner/login" as any} className="text-muted-foreground hover:text-primary transition-colors">
                   Partner Login
                 </Link>
               </li>
               <li>
-                <Link href="/partner/resources" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link href={"/partner/resources" as any} className="text-muted-foreground hover:text-primary transition-colors">
                   Resources
                 </Link>
               </li>
               <li>
-                <Link href="/partner/support" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link href={"/partner/support" as any} className="text-muted-foreground hover:text-primary transition-colors">
                   Partner Support
                 </Link>
               </li>
@@ -120,13 +121,13 @@ export function Footer() {
             © {currentYear} Motel. All rights reserved.
           </p>
           <div className="flex space-x-6 mt-4 md:mt-0">
-            <Link href="/privacy" className="text-muted-foreground hover:text-primary text-sm transition-colors">
+            <Link href={"/privacy" as any} className="text-muted-foreground hover:text-primary text-sm transition-colors">
               Privacy Policy
             </Link>
-            <Link href="/terms" className="text-muted-foreground hover:text-primary text-sm transition-colors">
+            <Link href={"/terms" as any} className="text-muted-foreground hover:text-primary text-sm transition-colors">
               Terms of Service
             </Link>
-            <Link href="/cookies" className="text-muted-foreground hover:text-primary text-sm transition-colors">
+            <Link href={"/cookies" as any} className="text-muted-foreground hover:text-primary text-sm transition-colors">
               Cookie Policy
             </Link>
           </div>

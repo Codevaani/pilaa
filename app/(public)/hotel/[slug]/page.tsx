@@ -3,15 +3,63 @@
 import { useState, useEffect } from "react"
 import { useParams } from "next/navigation"
 import Image from "next/image"
-import { Star, MapPin, Wifi, Car, Coffee, Dumbbell, Heart, Share2, ChevronLeft, ChevronRight, Users, Bed, Calendar } from "lucide-react"
+import { Star, MapPin, Heart, Share2, ChevronLeft, ChevronRight, Users, Bed } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import type { Property, Room, Review } from "@/types"
 
 
+
+interface Property {
+  _id: string;
+  name: string;
+  images: string[];
+  rating: number;
+  reviewCount: number;
+  address: {
+    city: string;
+    state: string;
+    street: string;
+    zipCode: string;
+  };
+  description: string;
+  amenities: string[];
+}
+
+interface Room {
+  _id: string;
+  id: string;
+  name: string;
+  price: number;
+  images: string[];
+  description: string;
+  capacity: {
+    adults: number;
+    children: number;
+  };
+  type: string;
+  amenities: string[];
+  availableRooms: number;
+}
+
+interface Review {
+  _id: string;
+  id: string;
+  user: {
+    name: string;
+  };
+  rating: number;
+  createdAt: string;
+  comment: string;
+}
+
+interface HotelData {
+  property: Property;
+  rooms: Room[];
+  reviews: Review[];
+}
 
 function ImageGallery({ images }: { images: string[] }) {
   const [currentImage, setCurrentImage] = useState(0)
@@ -92,7 +140,7 @@ function ImageGallery({ images }: { images: string[] }) {
   )
 }
 
-function BookingWidget({ property, rooms, selectedRoom, setSelectedRoom }: { property: any, rooms: any[], selectedRoom: string, setSelectedRoom: (id: string) => void }) {
+function BookingWidget({ property, rooms, selectedRoom, setSelectedRoom }: { property: Property, rooms: Room[], selectedRoom: string, setSelectedRoom: (id: string) => void }) {
   // selectedRoom is now passed as prop
   const [checkIn, setCheckIn] = useState('')
   const [checkOut, setCheckOut] = useState('')
@@ -273,7 +321,7 @@ function BookingWidget({ property, rooms, selectedRoom, setSelectedRoom }: { pro
 export default function HotelDetailPage() {
   const params = useParams()
   const [isLoading, setIsLoading] = useState(true)
-  const [data, setData] = useState<any>(null)
+  const [data, setData] = useState<HotelData | null>(null)
   const [selectedRoom, setSelectedRoom] = useState('')
 
   useEffect(() => {

@@ -1,8 +1,9 @@
-import mongoose from 'mongoose'
-
+/* eslint-disable no-var, @typescript-eslint/no-explicit-any */
 declare global {
   var mongoose: {
-    conn: typeof mongoose | null
-    promise: Promise<typeof mongoose> | null
-  }
+    conn: any | null;
+    promise: Promise<any> | null;
+  };
 }
+
+export {};

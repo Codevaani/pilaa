@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import dbConnect from '@/lib/mongodb'
-import Property from '@/models/Property'
+import { IProperty } from '@/models/Property';
 
 export async function GET() {
   try {
@@ -17,7 +17,7 @@ export async function GET() {
     await dbConnect()
     
     // For now, return empty array - implement saved properties logic later
-    const savedProperties = []
+    const savedProperties: IProperty[] = []
 
     return NextResponse.json({
       data: savedProperties,

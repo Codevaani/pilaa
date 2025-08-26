@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
-import { connectDB } from '@/lib/mongodb'
-import { Property } from '@/models/Property'
-import { Booking } from '@/models/Booking'
+import connectDB from '@/lib/mongodb'
+import Property from '@/models/Property'
+import Booking from '@/models/Booking'
 
 export async function GET() {
   try {
@@ -70,7 +70,7 @@ export async function GET() {
         activeUsers: uniqueUsers.length,
         totalProperties
       },
-      topProperties: topProperties.map(prop => ({
+      topProperties: topProperties.map((prop: { name: string; revenue: number; bookings: number }) => ({
         name: prop.name || 'Unknown Property',
         revenue: `₹${(prop.revenue / 100000).toFixed(1)}L`,
         bookings: prop.bookings

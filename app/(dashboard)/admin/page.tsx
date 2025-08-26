@@ -1,13 +1,31 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
+import Link from "next/link"
 import { Users, Building, BookOpen, DollarSign, TrendingUp, CheckCircle, XCircle } from "lucide-react"
 import { useUser } from "@clerk/nextjs"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
+interface Verification {
+  id: string;
+  businessName: string;
+  applicantName: string;
+  location: string;
+  propertyType: string;
+  submittedDate: string;
+  status: string;
+}
+
+interface RecentUser {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  joinedDate: string;
+}
 
 export default function AdminPanelPage() {
   const { user, isLoaded } = useUser()
@@ -19,11 +37,11 @@ export default function AdminPanelPage() {
     pendingVerifications: 0,
     activePartners: 0,
   })
-  const [pendingVerifications, setPendingVerifications] = useState<any[]>([])
-  const [recentUsers, setRecentUsers] = useState<any[]>([])
+  const [pendingVerifications, setPendingVerifications] = useState<Verification[]>([])
+  const [recentUsers, setRecentUsers] = useState<RecentUser[]>([])
   const [loading, setLoading] = useState(true)
 
-  const fetchAdminData = async () => {
+  const fetchAdminData = useCallback(async () => {
     try {
       const [statsRes, verificationsRes, usersRes] = await Promise.all([
         fetch('/api/admin/stats'),
@@ -50,7 +68,7 @@ export default function AdminPanelPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [stats])
 
   useEffect(() => {
     if (user?.publicMetadata?.role === 'admin') {
@@ -58,7 +76,7 @@ export default function AdminPanelPage() {
     } else {
       setLoading(false)
     }
-  }, [user])
+  }, [user, fetchAdminData])
 
 
 
@@ -200,9 +218,6 @@ export default function AdminPanelPage() {
                 <span>Pending Partner Verifications</span>
                 <Badge variant="secondary">{pendingVerifications.filter(v => v.status === 'pending').length} pending</Badge>
               </CardTitle>
-              <CardDescription>
-                Review and approve partner applications
-              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -254,9 +269,6 @@ export default function AdminPanelPage() {
           <Card>
             <CardHeader>
               <CardTitle>Recent Users</CardTitle>
-              <CardDescription>
-                Latest user registrations and activity
-              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -298,9 +310,6 @@ export default function AdminPanelPage() {
           <Card>
             <CardHeader>
               <CardTitle>Property Management</CardTitle>
-              <CardDescription>
-                Monitor and manage all properties on the platform
-              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="text-center py-12">
@@ -320,9 +329,6 @@ export default function AdminPanelPage() {
           <Card>
             <CardHeader>
               <CardTitle>Analytics & Reports</CardTitle>
-              <CardDescription>
-                Platform performance and business insights
-              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="text-center py-12">

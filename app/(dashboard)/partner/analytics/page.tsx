@@ -1,17 +1,46 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useUser } from "@clerk/nextjs"
-import { TrendingUp, DollarSign, Calendar, Users, Building, BarChart3, Star, Target } from "lucide-react"
+import { TrendingUp, DollarSign, Calendar, Building, BarChart3 } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 
+interface AnalyticsData {
+  overview: {
+    totalRevenue: number;
+    totalBookings: number;
+    averageBookingValue: number;
+    activeProperties: number;
+    totalProperties: number;
+  };
+  monthlyData: {
+    month: string;
+    revenue: number;
+    bookings: number;
+  }[];
+  topPerformers: {
+    id: string;
+    name: string;
+    bookings: number;
+    revenue: number;
+    occupancyRate: number;
+  }[];
+  propertyPerformance: {
+    id: string;
+    name: string;
+    bookings: number;
+    occupancyRate: number;
+    revenue: number;
+  }[];
+}
+
 export default function PartnerAnalyticsPage() {
   const { user, isLoaded } = useUser()
-  const [analytics, setAnalytics] = useState<any>(null)
+  const [analytics, setAnalytics] = useState<AnalyticsData | null>(null)
   const [loading, setLoading] = useState(true)
 
-  const fetchAnalytics = async () => {
+  const fetchAnalytics = useCallback(async () => {
     try {
       const response = await fetch('/api/partner/analytics')
       if (response.ok) {
@@ -23,7 +52,7 @@ export default function PartnerAnalyticsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
   useEffect(() => {
     if (user?.publicMetadata?.role === 'partner') {
@@ -31,7 +60,7 @@ export default function PartnerAnalyticsPage() {
     } else {
       setLoading(false)
     }
-  }, [user])
+  }, [user, fetchAnalytics])
 
   if (!isLoaded || loading) {
     return (
@@ -139,7 +168,7 @@ export default function PartnerAnalyticsPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {analytics.monthlyData.map((month: any, index: number) => (
+              {analytics.monthlyData.map((month: { month: string; revenue: number; bookings: number }, index: number) => (
                 <div key={index} className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
                     <div className="w-3 h-3 bg-primary rounded-full"></div>
@@ -163,7 +192,7 @@ export default function PartnerAnalyticsPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {analytics.topPerformers.map((property: any, index: number) => (
+              {analytics.topPerformers.map((property: { id: string; name: string; bookings: number; revenue: number; occupancyRate: number }, index: number) => (
                 <div key={property.id} className="flex items-center justify-between p-3 border rounded-lg">
                   <div className="flex items-center space-x-3">
                     <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
@@ -193,7 +222,7 @@ export default function PartnerAnalyticsPage() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {analytics.propertyPerformance.map((property: any) => (
+            {analytics.propertyPerformance.map((property: { id: string; name: string; bookings: number; occupancyRate: number; revenue: number }) => (
               <div key={property.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
                 <div className="flex items-center space-x-4">
                   <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">

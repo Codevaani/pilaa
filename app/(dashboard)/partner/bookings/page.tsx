@@ -1,38 +1,59 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useUser } from "@clerk/nextjs"
 import { 
   Calendar, 
   Users, 
-  MapPin, 
   Phone, 
   Mail, 
   CheckCircle, 
   XCircle, 
   Clock,
-  Filter,
   Download,
   MessageCircle,
   Eye,
   RefreshCw
 } from "lucide-react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Skeleton } from "@/components/ui/skeleton"
 
+interface Booking {
+  id: string;
+  _id: string;
+  guestName: string;
+  bookingId: string;
+  propertyName: string;
+  status: string;
+  amount: number;
+  totalAmount: number;
+  checkIn: string;
+  checkOut: string;
+  guests: {
+    adults: number;
+    children: number;
+  };
+  nights: number;
+  guestEmail: string;
+  guestPhone: string;
+  specialRequests: string;
+  bookingDate: string;
+  commission: number;
+}
+
 export default function PartnerBookingsPage() {
   const { user, isLoaded } = useUser()
-  const [bookings, setBookings] = useState<any[]>([])
+  const [bookings, setBookings] = useState<Booking[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
-  const [statusFilter, setStatusFilter] = useState("all")
   const [selectedTab, setSelectedTab] = useState("all")
+  const [statusFilter, setStatusFilter] = useState("all")
 
-  const fetchBookings = async () => {
+  const fetchBookings = useCallback(async () => {
     try {
       const response = await fetch('/api/partner/bookings')
       if (response.ok) {
@@ -44,7 +65,7 @@ export default function PartnerBookingsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
   useEffect(() => {
     if (user?.publicMetadata?.role === 'partner') {
@@ -52,7 +73,7 @@ export default function PartnerBookingsPage() {
     } else {
       setLoading(false)
     }
-  }, [user])
+  }, [user, fetchBookings])
 
   const getStatusBadgeVariant = (status: string) => {
     switch (status) {
@@ -69,18 +90,7 @@ export default function PartnerBookingsPage() {
     }
   }
 
-  const getPaymentStatusBadgeVariant = (status: string) => {
-    switch (status) {
-      case 'paid':
-        return 'default'
-      case 'pending':
-        return 'secondary'
-      case 'refunded':
-        return 'destructive'
-      default:
-        return 'outline'
-    }
-  }
+  
 
   const filteredBookings = bookings.filter(booking => {
     const matchesSearch = booking.guestName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -221,7 +231,7 @@ export default function PartnerBookingsPage() {
                             Booking ID: {booking._id || booking.id}
                           </p>
                           <p className="text-sm text-muted-foreground">
-                            Property: {booking.property || 'Property Name'}
+                            Property: {booking.propertyName || 'Property Name'}
                           </p>
                         </div>
                         <div className="text-right">
@@ -366,39 +376,7 @@ export default function PartnerBookingsPage() {
         </TabsContent>
       </Tabs>
 
-      {/* Revenue Summary */}
-      {filteredBookings.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Revenue Summary</CardTitle>
-            <CardDescription>
-              Financial overview of your bookings
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="text-center p-4 bg-muted/50 rounded-lg">
-                <div className="text-2xl font-bold text-primary">
-                  ₹{bookingStats.totalRevenue.toLocaleString()}
-                </div>
-                <div className="text-sm text-muted-foreground">Gross Revenue</div>
-              </div>
-              <div className="text-center p-4 bg-muted/50 rounded-lg">
-                <div className="text-2xl font-bold text-yellow-600">
-                  ₹{bookingStats.totalCommission.toLocaleString()}
-                </div>
-                <div className="text-sm text-muted-foreground">Platform Commission</div>
-              </div>
-              <div className="text-center p-4 bg-muted/50 rounded-lg">
-                <div className="text-2xl font-bold text-green-600">
-                  ₹{bookingStats.netRevenue.toLocaleString()}
-                </div>
-                <div className="text-sm text-muted-foreground">Net Revenue</div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+      
     </div>
   )
 }

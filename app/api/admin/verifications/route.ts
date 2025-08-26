@@ -81,7 +81,7 @@ export async function PATCH(request: Request) {
 
     await dbConnect()
     
-    const updateData: any = { status }
+    const updateData: { status: string; notes?: string } = { status }
     if (notes) {
       updateData.notes = notes
     }

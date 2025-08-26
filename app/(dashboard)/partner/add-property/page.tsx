@@ -1,15 +1,13 @@
 "use client"
 
 import { useState } from "react"
+import Image from "next/image"
 import { useUser } from "@clerk/nextjs"
 import { useRouter } from "next/navigation"
 import { 
-  Building, 
-  MapPin, 
   Upload, 
   Plus, 
   X, 
-  Camera, 
   Wifi, 
   Car, 
   Coffee, 
@@ -18,18 +16,14 @@ import {
   Utensils,
   Shield,
   Users,
-  Bed,
-  Bath,
-  Square,
   ArrowLeft,
   Save
 } from "lucide-react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
-import { Switch } from "@/components/ui/switch"
 import Link from "next/link"
 
 const amenityOptions = [
@@ -108,7 +102,7 @@ export default function AddPropertyPage() {
     contactPhone: "",
   })
 
-  const handleInputChange = (field: string, value: any) => {
+  const handleInputChange = (field: string, value: string | number | boolean) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -165,7 +159,7 @@ export default function AddPropertyPage() {
     }))
   }
 
-  const updateRoom = (roomId: number, field: string, value: any) => {
+  const updateRoom = (roomId: number, field: string, value: string | number | object) => {
     setFormData(prev => ({
       ...prev,
       rooms: prev.rooms.map(room => 
@@ -439,9 +433,11 @@ export default function AddPropertyPage() {
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       {formData.images.map((image, index) => (
                         <div key={index} className="relative group">
-                          <img
+                          <Image
                             src={URL.createObjectURL(image)}
                             alt={`Property image ${index + 1}`}
+                            width={200}
+                            height={128}
                             className="w-full h-32 object-cover rounded-lg"
                           />
                           <button

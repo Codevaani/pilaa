@@ -5,12 +5,10 @@ import { useUser } from "@clerk/nextjs"
 import { 
   Bell, 
   Shield, 
-  CreditCard, 
   Globe, 
   Moon, 
   Sun, 
   Smartphone, 
-  Mail, 
   Lock,
   Eye,
   EyeOff,

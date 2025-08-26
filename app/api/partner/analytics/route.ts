@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
-import { connectDB } from '@/lib/mongodb'
-import { Property } from '@/models/Property'
-import { Booking } from '@/models/Booking'
+import connectDB from '@/lib/mongodb'
+import Property from '@/models/Property'
+import Booking from '@/models/Booking'
 
 export async function GET() {
   try {
@@ -24,7 +24,7 @@ export async function GET() {
     const bookings = await Booking.find({ propertyId: { $in: propertyIds } })
     
     // Calculate analytics
-    const totalRevenue = bookings.reduce((sum, booking) => sum + booking.totalAmount, 0)
+    const totalRevenue = bookings.reduce((sum: number, booking: { totalAmount: number }) => sum + booking.totalAmount, 0)
     const totalBookings = bookings.length
     const averageBookingValue = totalBookings > 0 ? totalRevenue / totalBookings : 0
     
@@ -36,10 +36,10 @@ export async function GET() {
       const monthStart = new Date(date.getFullYear(), date.getMonth(), 1)
       const monthEnd = new Date(date.getFullYear(), date.getMonth() + 1, 0)
       
-      const monthBookings = bookings.filter(b => 
+      const monthBookings = bookings.filter((b: { createdAt: Date }) => 
         b.createdAt >= monthStart && b.createdAt <= monthEnd
       )
-      const monthRevenue = monthBookings.reduce((sum, b) => sum + b.totalAmount, 0)
+      const monthRevenue = monthBookings.reduce((sum: number, b: { totalAmount: number }) => sum + b.totalAmount, 0)
       
       monthlyData.push({
         month: date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
@@ -49,9 +49,9 @@ export async function GET() {
     }
     
     // Property performance
-    const propertyPerformance = partnerProperties.map(property => {
-      const propBookings = bookings.filter(b => b.propertyId.toString() === property._id.toString())
-      const propRevenue = propBookings.reduce((sum, b) => sum + b.totalAmount, 0)
+    const propertyPerformance = partnerProperties.map((property: { _id: { toString: () => string }; name: string; }) => {
+      const propBookings = bookings.filter((b: { propertyId: { toString: () => string }; }) => b.propertyId.toString() === property._id.toString())
+      const propRevenue = propBookings.reduce((sum: number, b: { totalAmount: number }) => sum + b.totalAmount, 0)
       
       return {
         id: property._id.toString(),

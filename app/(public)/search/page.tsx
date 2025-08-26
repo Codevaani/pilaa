@@ -1,15 +1,34 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useSearchParams } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
-import { Star, MapPin, Wifi, Car, Coffee, Dumbbell, Filter, Grid, List } from "lucide-react"
+import { Star, MapPin, Wifi, Car, Coffee, Dumbbell, Grid, List } from "lucide-react";
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
 import { SearchBar } from "@/components/search-bar"
+
+interface Hotel {
+  _id: string;
+  name: string;
+  slug: string;
+  images: string[];
+  address: {
+    city: string;
+    state: string;
+  };
+  propertyType: string;
+  rating: number;
+  reviewCount: number;
+  priceRange: {
+    min: number;
+    max: number;
+  };
+  amenities: string[];
+}
 
 const amenityIcons = {
   wifi: Wifi,
@@ -110,7 +129,7 @@ function SearchFilters() {
   )
 }
 
-function HotelCard({ hotel, viewMode }: { hotel: any, viewMode: 'grid' | 'list' }) {
+function HotelCard({ hotel, viewMode }: { hotel: Hotel, viewMode: 'grid' | 'list' }) {
   const isListView = viewMode === 'list'
 
   return (
@@ -170,7 +189,7 @@ function HotelCard({ hotel, viewMode }: { hotel: any, viewMode: 'grid' | 'list' 
   )
 }
 
-function SearchResults({ hotels, loading, totalResults }: { hotels: any[], loading: boolean, totalResults: number }) {
+function SearchResults({ hotels, loading, totalResults }: { hotels: Hotel[], loading: boolean, totalResults: number }) {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [sortBy, setSortBy] = useState('popularity')
 
@@ -257,12 +276,11 @@ function SearchResults({ hotels, loading, totalResults }: { hotels: any[], loadi
 
 export default function SearchPage() {
   const searchParams = useSearchParams()
-  const [showMobileFilters, setShowMobileFilters] = useState(false)
-  const [hotels, setHotels] = useState<any[]>([])
+  const [hotels, setHotels] = useState<Hotel[]>([])
   const [loading, setLoading] = useState(true)
   const [totalResults, setTotalResults] = useState(0)
 
-  const fetchHotels = async () => {
+  const fetchHotels = useCallback(async () => {
     try {
       const params = new URLSearchParams()
       if (searchParams.get('city')) params.set('city', searchParams.get('city')!)
@@ -281,11 +299,11 @@ export default function SearchPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [searchParams])
 
   useEffect(() => {
     fetchHotels()
-  }, [searchParams])
+  }, [searchParams, fetchHotels])
 
   return (
     <div className="min-h-screen bg-background">
@@ -301,18 +319,6 @@ export default function SearchPage() {
           {/* Desktop Filters */}
           <div className="hidden lg:block w-80">
             <SearchFilters />
-          </div>
-
-          {/* Mobile Filter Button */}
-          <div className="lg:hidden mb-4">
-            <Button
-              variant="outline"
-              onClick={() => setShowMobileFilters(true)}
-              className="w-full"
-            >
-              <Filter className="h-4 w-4 mr-2" />
-              Filters
-            </Button>
           </div>
 
           {/* Results */}

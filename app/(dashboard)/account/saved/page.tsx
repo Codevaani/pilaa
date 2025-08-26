@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useUser } from "@clerk/nextjs"
 import { sanitizeLog } from "@/lib/security"
 import { Heart, MapPin, Star, Eye, Trash2 } from "lucide-react"
@@ -12,15 +12,32 @@ import { Input } from "@/components/ui/input"
 import Image from "next/image"
 import Link from "next/link"
 
+interface Hotel {
+  id: string;
+  name: string;
+  location: string;
+  image: string;
+  availability: boolean;
+  rating: number;
+  reviews: number;
+  propertyType: string;
+  amenities: string[];
+  savedDate: string;
+  priceRange: {
+    min: number;
+    max: number;
+  };
+}
+
 export default function SavedHotelsPage() {
   const { user, isLoaded } = useUser()
-  const [savedHotels, setSavedHotels] = useState<any[]>([])
+  const [savedHotels, setSavedHotels] = useState<Hotel[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedFilter, setSelectedFilter] = useState("all")
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
 
-  const fetchSavedHotels = async () => {
+  const fetchSavedHotels = useCallback(async () => {
     try {
       const response = await fetch('/api/user/saved')
       if (response.ok) {
@@ -32,7 +49,7 @@ export default function SavedHotelsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
   useEffect(() => {
     if (user) {
@@ -40,7 +57,7 @@ export default function SavedHotelsPage() {
     } else {
       setLoading(false)
     }
-  }, [user])
+  }, [user, fetchSavedHotels])
 
 
 

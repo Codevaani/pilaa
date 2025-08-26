@@ -111,7 +111,7 @@ export default function LoginPage() {
                 <span className="text-sm">Remember me</span>
               </label>
               <Link
-                href="/auth/forgot-password"
+                href={{ pathname: "/auth/forgot-password" }}
                 className="text-sm text-primary hover:underline"
               >
                 Forgot password?
@@ -174,7 +174,7 @@ export default function LoginPage() {
 
           {/* Sign up link */}
           <div className="mt-6 text-center text-sm">
-            <span className="text-muted-foreground">Don't have an account? </span>
+            <span className="text-muted-foreground">Don&apos;t have an account? </span>
             <Link href="/auth/register" className="text-primary hover:underline font-medium">
               Sign up
             </Link>

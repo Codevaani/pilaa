@@ -26,7 +26,19 @@ export async function POST(request: Request) {
     
     await dbConnect()
     
-    const bookingData = {
+    interface BookingData {
+      userId: string;
+      propertyId: string;
+      roomId?: string;
+      checkIn: Date;
+      checkOut: Date;
+      guests: { adults: number; children: number };
+      totalAmount: number;
+      status: string;
+      confirmationNumber: string;
+    }
+
+    const bookingData: BookingData = {
       userId,
       propertyId,
       checkIn: new Date(checkIn),

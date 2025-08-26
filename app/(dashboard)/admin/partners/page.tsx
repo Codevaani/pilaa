@@ -1,17 +1,28 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useUser } from "@clerk/nextjs"
 import { UserCheck, Building, Mail, Phone, MapPin, Calendar } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 
+interface Partner {
+  id: string;
+  businessName: string;
+  applicantName: string;
+  email: string;
+  phone: string;
+  location: string;
+  propertyType: string;
+  approvedDate: string;
+}
+
 export default function AdminPartnersPage() {
   const { user, isLoaded } = useUser()
-  const [partners, setPartners] = useState<any[]>([])
+  const [partners, setPartners] = useState<Partner[]>([])
   const [loading, setLoading] = useState(true)
 
-  const fetchPartners = async () => {
+  const fetchPartners = useCallback(async () => {
     try {
       const response = await fetch('/api/admin/partners')
       if (response.ok) {
@@ -23,7 +34,7 @@ export default function AdminPartnersPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
   useEffect(() => {
     if (user?.publicMetadata?.role === 'admin') {
@@ -31,7 +42,7 @@ export default function AdminPartnersPage() {
     } else {
       setLoading(false)
     }
-  }, [user])
+  }, [user, fetchPartners])
 
   if (!isLoaded || loading) {
     return (

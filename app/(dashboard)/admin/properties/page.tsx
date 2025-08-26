@@ -1,17 +1,33 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
+import Image from "next/image"
 import { useUser } from "@clerk/nextjs"
-import { sanitizeLog } from "@/lib/security"
-import { Search, Filter, MoreHorizontal, Eye, CheckCircle, XCircle, Building } from "lucide-react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Search, Filter, Eye, CheckCircle, XCircle, Building } from "lucide-react"
+import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 
+interface Property {
+  id: string;
+  name: string;
+  location: string;
+  partner: string;
+  type: string;
+  status: string;
+  rooms: number;
+  bookings: number;
+  rating: number;
+  reviews: number;
+  revenue: number;
+  createdDate: string;
+  image: string;
+}
+
 export default function AdminPropertiesPage() {
   const { user, isLoaded } = useUser()
-  const [properties, setProperties] = useState<any[]>([])
+  const [properties, setProperties] = useState<Property[]>([])
   const [propertyStats, setPropertyStats] = useState({
     total: 0,
     active: 0,
@@ -26,7 +42,7 @@ export default function AdminPropertiesPage() {
   const [selectedType, setSelectedType] = useState("all")
   const [selectedStatus, setSelectedStatus] = useState("all")
 
-  const fetchProperties = async () => {
+  const fetchProperties = useCallback(async () => {
     try {
       const response = await fetch('/api/admin/properties')
       if (response.ok) {
@@ -39,7 +55,7 @@ export default function AdminPropertiesPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [propertyStats])
 
   useEffect(() => {
     if (user?.publicMetadata?.role === 'admin') {
@@ -47,7 +63,7 @@ export default function AdminPropertiesPage() {
     } else {
       setLoading(false)
     }
-  }, [user])
+  }, [user, fetchProperties])
 
 
 
@@ -246,9 +262,11 @@ export default function AdminPropertiesPage() {
         {filteredProperties.map((property) => (
           <Card key={property.id} className="overflow-hidden hover:shadow-lg transition-shadow">
             <div className="relative h-48">
-              <img
+              <Image
                 src={property.image}
                 alt={property.name}
+                width={400}
+                height={300}
                 className="w-full h-full object-cover"
               />
               <div className="absolute top-4 right-4 flex gap-2">

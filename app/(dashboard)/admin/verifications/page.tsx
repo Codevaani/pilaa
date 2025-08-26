@@ -1,17 +1,33 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
+import Image from "next/image"
 import { useUser } from "@clerk/nextjs"
-import { CheckCircle, XCircle, Clock, Eye, FileText, User, Building, X } from "lucide-react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { CheckCircle, XCircle, Clock, Eye, FileText, User, Building } from "lucide-react"
+import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 
+interface Verification {
+  id: string;
+  businessName: string;
+  applicantName: string;
+  email: string;
+  phone: string;
+  location: string;
+  propertyType: string;
+  submittedDate: string;
+  status: string;
+  type: string;
+  notes?: string;
+  documents: { [key: string]: string };
+}
+
 export default function AdminVerificationsPage() {
   const { user, isLoaded } = useUser()
-  const [verifications, setVerifications] = useState<any[]>([])
+  const [verifications, setVerifications] = useState<Verification[]>([])
   const [verificationStats, setVerificationStats] = useState({
     total: 0,
     pending: 0,
@@ -21,10 +37,10 @@ export default function AdminVerificationsPage() {
   })
   const [loading, setLoading] = useState(true)
   const [selectedTab, setSelectedTab] = useState("pending")
-  const [selectedVerification, setSelectedVerification] = useState<any>(null)
+  const [selectedVerification, setSelectedVerification] = useState<Verification | null>(null)
   const [showDetailsModal, setShowDetailsModal] = useState(false)
 
-  const fetchVerifications = async () => {
+  const fetchVerifications = useCallback(async () => {
     try {
       const response = await fetch('/api/admin/verifications')
       if (response.ok) {
@@ -37,7 +53,7 @@ export default function AdminVerificationsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [verificationStats])
 
   useEffect(() => {
     if (user?.publicMetadata?.role === 'admin') {
@@ -45,7 +61,7 @@ export default function AdminVerificationsPage() {
     } else {
       setLoading(false)
     }
-  }, [user])
+  }, [user, fetchVerifications])
 
   const handleVerificationAction = async (verificationId: string, action: string, notes?: string) => {
     try {
@@ -133,7 +149,7 @@ export default function AdminVerificationsPage() {
     )
   }
 
-  const openDetailsModal = (verification: any) => {
+  const openDetailsModal = (verification: Verification) => {
     console.log('Verification documents:', verification.documents)
     setSelectedVerification(verification)
     setShowDetailsModal(true)
@@ -288,7 +304,7 @@ export default function AdminVerificationsPage() {
                         <div className="mt-4">
                           <span className="text-sm font-medium">Documents: </span>
                           <div className="flex flex-wrap gap-2 mt-2">
-                            {Object.entries(verification.documents).map(([key, value]) => (
+                            {Object.entries(verification.documents).map(([key]) => (
                               <Badge key={key} variant="outline" className="text-xs">
                                 {key.replace(/([A-Z])/g, ' $1').toLowerCase()}
                               </Badge>
@@ -418,11 +434,13 @@ export default function AdminVerificationsPage() {
                         {value && typeof value === 'string' && value.trim() !== '' ? (
                           value.startsWith('http') || value.startsWith('data:') || value.includes('cloudinary') ? (
                             <div className="space-y-2">
-                              <img 
-                                src={value} 
+                              <Image 
+                                src={value as string} 
                                 alt={key}
+                                width={200}
+                                height={128}
                                 className="w-full h-32 object-cover rounded cursor-pointer border hover:opacity-80 transition-opacity"
-                                onClick={() => window.open(value, '_blank')}
+                                onClick={() => window.open(value as string, '_blank')}
                                 onError={(e) => {
                                   console.log('Image failed to load:', value)
                                   e.currentTarget.style.display = 'none'

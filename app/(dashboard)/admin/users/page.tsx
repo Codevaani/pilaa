@@ -1,17 +1,28 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useUser } from "@clerk/nextjs"
-import { Search, Filter, MoreHorizontal, UserCheck, UserX, Shield, Crown } from "lucide-react"
+import { Search, MoreHorizontal, UserCheck, UserX, Shield, Crown } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  status: string;
+  joinedDate: string;
+  lastActive: string;
+  totalBookings: number;
+  totalSpent: number;
+}
 
 export default function AdminUsersPage() {
   const { user, isLoaded } = useUser()
-  const [users, setUsers] = useState<any[]>([])
+  const [users, setUsers] = useState<User[]>([])
   const [userStats, setUserStats] = useState({
     total: 0,
     active: 0,
@@ -26,7 +37,7 @@ export default function AdminUsersPage() {
   const [selectedRole, setSelectedRole] = useState("all")
   const [selectedStatus, setSelectedStatus] = useState("all")
 
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       const response = await fetch('/api/admin/users')
       if (response.ok) {
@@ -39,7 +50,7 @@ export default function AdminUsersPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [userStats])
 
   useEffect(() => {
     if (user?.publicMetadata?.role === 'admin') {
@@ -47,7 +58,7 @@ export default function AdminUsersPage() {
     } else {
       setLoading(false)
     }
-  }, [user])
+  }, [user, fetchUsers])
 
   const handleUserAction = (userId: string, action: string) => {
     console.log(`${action} user ${userId}`)

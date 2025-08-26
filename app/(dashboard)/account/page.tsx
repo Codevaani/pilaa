@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import Image from "next/image"
 import { Camera, Mail, Phone, MapPin, Calendar } from "lucide-react"
 import { useUser } from "@clerk/nextjs"
 import { Button } from "@/components/ui/button"
@@ -129,9 +130,11 @@ export default function AccountProfilePage() {
             <div className="flex flex-col items-center space-y-4">
               <div className="relative">
                 {user.imageUrl ? (
-                  <img
+                  <Image
                     src={user.imageUrl}
                     alt={user.fullName || "Profile"}
+                    width={96}
+                    height={96}
                     className="w-24 h-24 rounded-full object-cover"
                   />
                 ) : (

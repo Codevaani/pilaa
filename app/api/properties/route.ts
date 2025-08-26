@@ -80,7 +80,15 @@ export async function GET(request: Request) {
     const maxPrice = searchParams.get('maxPrice')
     const rating = searchParams.get('rating')
     
-    let query: any = { status: 'active' }
+    interface Query {
+      status: string;
+      'address.city'?: { $regex: string; $options: string };
+      'priceRange.min'?: { $gte?: number; $lte?: number };
+      rating?: { $gte?: number };
+      [key: string]: string | number | object | undefined;
+    }
+
+    const query: Query = { status: 'active' }
     
     if (city) {
       query['address.city'] = { $regex: city, $options: 'i' }

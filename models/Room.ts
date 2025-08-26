@@ -1,4 +1,21 @@
-import mongoose from 'mongoose'
+import mongoose, { Document } from 'mongoose';
+
+export interface IRoom extends Document {
+  propertyId: mongoose.Schema.Types.ObjectId;
+  name: string;
+  description: string;
+  images: string[];
+  type: string;
+  capacity: {
+    adults: number;
+    children: number;
+  };
+  amenities: string[];
+  price: number;
+  availability: boolean;
+  totalRooms: number;
+  availableRooms: number;
+}
 
 const RoomSchema = new mongoose.Schema({
   propertyId: { type: mongoose.Schema.Types.ObjectId, ref: 'Property', required: true },
@@ -17,6 +34,6 @@ const RoomSchema = new mongoose.Schema({
   availableRooms: Number
 }, {
   timestamps: true
-})
+});
 
-export default mongoose.models.Room || mongoose.model('Room', RoomSchema)
+export default mongoose.models.Room || mongoose.model<IRoom>('Room', RoomSchema);
