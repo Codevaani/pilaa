@@ -275,7 +275,7 @@ export default function PartnerBenefitsPage() {
                     ))}
                   </div>
                   <p className="text-muted-foreground mb-6 italic">
-                    "{testimonial.comment}"
+                    &quot;{testimonial.comment}&quot;
                   </p>
                   <div>
                     <div className="font-semibold">{testimonial.name}</div>

@@ -1,13 +1,14 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Users, Building, BookOpen, DollarSign, TrendingUp, CheckCircle, XCircle, Clock } from "lucide-react"
+import Link from "next/link"
+import { Users, Building, BookOpen, DollarSign, TrendingUp, CheckCircle, XCircle } from "lucide-react"
 import { useUser } from "@clerk/nextjs"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Skeleton } from "@/components/ui/skeleton"
+
 
 export default function AdminPanelPage() {
   const { user, isLoaded } = useUser()
@@ -94,10 +95,10 @@ export default function AdminPanelPage() {
             </div>
             <h2 className="text-xl font-semibold mb-2">Access Denied</h2>
             <p className="text-muted-foreground mb-4">
-              You don't have permission to access the admin panel.
+              You don&apos;t have permission to access the admin panel.
             </p>
             <Button asChild>
-              <a href="/">Go to Home</a>
+              <Link href="/">Go to Home</Link>
             </Button>
           </CardContent>
         </Card>

@@ -80,7 +80,7 @@ export async function GET(request: Request) {
     const maxPrice = searchParams.get('maxPrice')
     const rating = searchParams.get('rating')
     
-    let query: any = { status: 'active' }
+    const query: any = { status: 'active' }
     
     if (city) {
       query['address.city'] = { $regex: city, $options: 'i' }

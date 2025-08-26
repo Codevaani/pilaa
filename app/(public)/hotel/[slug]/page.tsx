@@ -3,13 +3,13 @@
 import { useState, useEffect } from "react"
 import { useParams } from "next/navigation"
 import Image from "next/image"
-import { Star, MapPin, Wifi, Car, Coffee, Dumbbell, Heart, Share2, ChevronLeft, ChevronRight, Users, Bed, Calendar } from "lucide-react"
+import { Star, MapPin, Heart, Share2, ChevronLeft, ChevronRight, Users, Bed } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import type { Property, Room, Review } from "@/types"
+
 
 
 

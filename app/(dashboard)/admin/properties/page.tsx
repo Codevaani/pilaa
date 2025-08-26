@@ -2,9 +2,8 @@
 
 import { useState, useEffect } from "react"
 import { useUser } from "@clerk/nextjs"
-import { sanitizeLog } from "@/lib/security"
-import { Search, Filter, MoreHorizontal, Eye, CheckCircle, XCircle, Building } from "lucide-react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Search, Filter, Eye, CheckCircle, XCircle, Building } from "lucide-react"
+import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"

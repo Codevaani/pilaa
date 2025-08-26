@@ -4,14 +4,17 @@ import { useState, useEffect } from "react"
 import { useUser } from "@clerk/nextjs"
 import { sanitizeLog } from "@/lib/security"
 import { Calendar, MapPin, Users, Star, Download, Eye, MessageCircle, RefreshCw } from "lucide-react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Skeleton } from "@/components/ui/skeleton"
 import Image from "next/image"
 
-const [bookings, setBookings] = useState<any[]>([])
+export default function MyBookingsPage() {
+  const { user, isLoaded } = useUser()
+  const [selectedTab, setSelectedTab] = useState("all")
+  const [bookings, setBookings] = useState<any[]>([])
   const [bookingStats, setBookingStats] = useState({
     total: 0,
     upcoming: 0,
@@ -44,11 +47,6 @@ const [bookings, setBookings] = useState<any[]>([])
     }
   }, [user])
 
-export default function MyBookingsPage() {
-  const { user, isLoaded } = useUser()
-  const [selectedTab, setSelectedTab] = useState("all")
-  const [isLoading, setIsLoading] = useState(true)
-
 
 
   const getStatusBadgeVariant = (status: string) => {
@@ -65,19 +63,7 @@ export default function MyBookingsPage() {
     }
   }
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'confirmed':
-      case 'upcoming':
-        return 'text-primary'
-      case 'completed':
-        return 'text-green-600'
-      case 'cancelled':
-        return 'text-red-600'
-      default:
-        return 'text-muted-foreground'
-    }
-  }
+
 
   const filteredBookings = bookings.filter(booking => {
     if (selectedTab === "all") return true

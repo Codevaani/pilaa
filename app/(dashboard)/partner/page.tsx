@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import Link from "next/link"
 import { Building, DollarSign, Calendar, Users, Plus, Eye, Edit, TrendingUp, XCircle } from "lucide-react"
 import { useUser } from "@clerk/nextjs"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -88,14 +89,14 @@ export default function PartnerPanelPage() {
             </div>
             <h2 className="text-xl font-semibold mb-2">Access Denied</h2>
             <p className="text-muted-foreground mb-4">
-              You don't have permission to access the partner panel. Please apply to become a partner first.
+              You don&apos;t have permission to access the partner panel. Please apply to become a partner first.
             </p>
             <div className="flex flex-col sm:flex-row gap-2">
               <Button asChild>
                 <a href="/partner/register">Become a Partner</a>
               </Button>
               <Button variant="outline" asChild>
-                <a href="/">Go to Home</a>
+                <Link href="/">Go to Home</Link>
               </Button>
             </div>
           </CardContent>

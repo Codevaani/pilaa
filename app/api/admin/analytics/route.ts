@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
-import { connectDB } from '@/lib/mongodb'
-import { Property } from '@/models/Property'
-import { Booking } from '@/models/Booking'
+import dbConnect from '@/lib/mongodb'
+import Property from '@/models/Property'
+import Booking from '@/models/Booking'
 
 export async function GET() {
   try {
@@ -15,7 +15,7 @@ export async function GET() {
       )
     }
 
-    await connectDB()
+    await dbConnect()
     
     // Get total counts
     const [totalProperties, totalBookings] = await Promise.all([

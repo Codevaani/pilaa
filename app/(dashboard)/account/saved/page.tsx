@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { useUser } from "@clerk/nextjs"
 import { sanitizeLog } from "@/lib/security"
-import { Heart, MapPin, Star, Eye, Trash2, Calendar, Filter } from "lucide-react"
+import { Heart, MapPin, Star, Eye, Trash2 } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -12,8 +12,13 @@ import { Input } from "@/components/ui/input"
 import Image from "next/image"
 import Link from "next/link"
 
-const [savedHotels, setSavedHotels] = useState<any[]>([])
+export default function SavedHotelsPage() {
+  const { user, isLoaded } = useUser()
+  const [savedHotels, setSavedHotels] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [searchTerm, setSearchTerm] = useState("")
+  const [selectedFilter, setSelectedFilter] = useState("all")
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
 
   const fetchSavedHotels = async () => {
     try {
@@ -36,13 +41,6 @@ const [savedHotels, setSavedHotels] = useState<any[]>([])
       setLoading(false)
     }
   }, [user])
-
-export default function SavedHotelsPage() {
-  const { user, isLoaded } = useUser()
-  const [isLoading, setIsLoading] = useState(true)
-  const [searchTerm, setSearchTerm] = useState("")
-  const [selectedFilter, setSelectedFilter] = useState("all")
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
 
 
 

@@ -95,7 +95,7 @@ export default function PartnerRegistrationSuccessPage() {
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Your partner application has been successfully submitted. 
-            We're excited to have you join the Motel family!
+            We&apos;re excited to have you join the Motel family!
           </p>
         </div>
 
@@ -212,7 +212,7 @@ export default function PartnerRegistrationSuccessPage() {
                 </div>
                 <h3 className="font-semibold mb-2">Email Confirmation</h3>
                 <p className="text-sm text-muted-foreground">
-                  You'll receive a confirmation email within 24 hours with your application details
+                  You&apos;ll receive a confirmation email within 24 hours with your application details
                 </p>
               </div>
 
@@ -232,7 +232,7 @@ export default function PartnerRegistrationSuccessPage() {
                 </div>
                 <h3 className="font-semibold mb-2">Final Approval</h3>
                 <p className="text-sm text-muted-foreground">
-                  We'll contact you within 5-7 business days with the final decision
+                  We&apos;ll contact you within 5-7 business days with the final decision
                 </p>
               </div>
             </div>
@@ -253,7 +253,7 @@ export default function PartnerRegistrationSuccessPage() {
                   <li>• Check your email regularly for updates on your application</li>
                   <li>• Our team may contact you if additional information is needed</li>
                   <li>• The review process typically takes 5-7 business days</li>
-                  <li>• You'll receive access to the partner dashboard once approved</li>
+                  <li>• You&apos;ll receive access to the partner dashboard once approved</li>
                 </ul>
               </div>
             </div>
