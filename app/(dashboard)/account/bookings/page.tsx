@@ -32,6 +32,7 @@ interface Booking {
 
 interface BookingStats {
   total: number;
+  pending: number;
   upcoming: number;
   completed: number;
   cancelled: number;
@@ -43,6 +44,7 @@ export default function MyBookingsPage() {
   const [bookings, setBookings] = useState<Booking[]>([])
   const [bookingStats, setBookingStats] = useState<BookingStats>({
     total: 0,
+    pending: 0,
     upcoming: 0,
     completed: 0,
     cancelled: 0,
@@ -50,8 +52,11 @@ export default function MyBookingsPage() {
   })
   const [loading, setLoading] = useState(true)
   const [selectedTab, setSelectedTab] = useState("all")
+  const [refreshing, setRefreshing] = useState(false)
 
-  const fetchBookings = useCallback(async () => {
+  const fetchBookings = useCallback(async (isRefresh = false) => {
+    if (isRefresh) setRefreshing(true)
+    
     try {
       const response = await fetch('/api/user/bookings')
       if (response.ok) {
@@ -63,8 +68,13 @@ export default function MyBookingsPage() {
       console.error('Failed to fetch bookings')
     } finally {
       setLoading(false)
+      setRefreshing(false)
     }
   }, [bookingStats])
+
+  const handleRefresh = () => {
+    fetchBookings(true)
+  }
 
   useEffect(() => {
     if (user) {
@@ -79,8 +89,10 @@ export default function MyBookingsPage() {
       case 'confirmed':
       case 'upcoming':
         return 'default'
-      case 'completed':
+      case 'pending':
         return 'secondary'
+      case 'completed':
+        return 'outline'
       case 'cancelled':
         return 'destructive'
       default:
@@ -90,6 +102,7 @@ export default function MyBookingsPage() {
 
   const filteredBookings = bookings.filter(booking => {
     if (selectedTab === "all") return true
+    if (selectedTab === "pending") return booking.status === "pending"
     if (selectedTab === "upcoming") return booking.status === "upcoming" || booking.status === "confirmed"
     if (selectedTab === "completed") return booking.status === "completed"
     if (selectedTab === "cancelled") return booking.status === "cancelled"
@@ -130,11 +143,21 @@ export default function MyBookingsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold mb-2">My Bookings</h1>
-        <p className="text-muted-foreground">
-          Manage your hotel reservations and travel history
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold mb-2">My Bookings</h1>
+          <p className="text-muted-foreground">
+            Manage your hotel reservations and travel history
+          </p>
+        </div>
+        <Button 
+          onClick={handleRefresh} 
+          disabled={refreshing}
+          variant="outline"
+        >
+          <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
+          {refreshing ? 'Refreshing...' : 'Refresh'}
+        </Button>
       </div>
 
       {/* Stats Cards */}
@@ -167,8 +190,9 @@ export default function MyBookingsPage() {
 
       {/* Bookings */}
       <Tabs value={selectedTab} onValueChange={setSelectedTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="all">All Bookings</TabsTrigger>
+          <TabsTrigger value="pending">Pending</TabsTrigger>
           <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
           <TabsTrigger value="completed">Completed</TabsTrigger>
           <TabsTrigger value="cancelled">Cancelled</TabsTrigger>

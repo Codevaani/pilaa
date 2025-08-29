@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react"
 import Link from "next/link"
-import { Building, DollarSign, Calendar, Users, Plus, Eye, Edit, TrendingUp, XCircle } from "lucide-react"
+import { Building, DollarSign, Calendar, Users, Plus, Eye, Edit, TrendingUp, XCircle, BedDouble } from "lucide-react"
 import { useUser } from "@clerk/nextjs"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -40,6 +40,7 @@ export default function PartnerPanelPage() {
     occupancyRate: 0,
     averageRating: 0,
     thisMonthBookings: 0,
+    totalRooms: 0,
   })
   const [properties, setProperties] = useState<Property[]>([])
   const [recentBookings, setRecentBookings] = useState<RecentBooking[]>([])
@@ -47,10 +48,11 @@ export default function PartnerPanelPage() {
 
   const fetchPartnerData = useCallback(async () => {
     try {
-      const [statsRes, propertiesRes, bookingsRes] = await Promise.all([
+      const [statsRes, propertiesRes, bookingsRes, roomsRes] = await Promise.all([
         fetch('/api/partner/stats'),
         fetch('/api/partner/properties'),
-        fetch('/api/partner/bookings')
+        fetch('/api/partner/bookings'),
+        fetch('/api/partner/rooms')
       ])
       
       if (statsRes.ok) {
@@ -66,6 +68,14 @@ export default function PartnerPanelPage() {
       if (bookingsRes.ok) {
         const bookingsData = await bookingsRes.json()
         setRecentBookings(bookingsData.data || [])
+      }
+      
+      if (roomsRes.ok) {
+        const roomsData = await roomsRes.json()
+        setStats(prevStats => ({
+          ...prevStats,
+          totalRooms: roomsData.stats?.totalRooms || 0
+        }))
       }
     } catch (error) {
       console.error('Failed to fetch partner data')
@@ -161,7 +171,7 @@ export default function PartnerPanelPage() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
@@ -170,6 +180,18 @@ export default function PartnerPanelPage() {
                 <p className="text-2xl font-bold text-primary">{stats.totalProperties}</p>
               </div>
               <Building className="h-8 w-8 text-primary" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">Total Rooms</p>
+                <p className="text-2xl font-bold text-primary">{stats.totalRooms}</p>
+              </div>
+              <BedDouble className="h-8 w-8 text-primary" />
             </div>
           </CardContent>
         </Card>
@@ -213,11 +235,9 @@ export default function PartnerPanelPage() {
 
       {/* Main Content */}
       <Tabs defaultValue="properties" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="properties">My Properties</TabsTrigger>
           <TabsTrigger value="bookings">Bookings</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
-          <TabsTrigger value="settings">Settings</TabsTrigger>
         </TabsList>
 
         {/* Properties Tab */}
@@ -311,43 +331,6 @@ export default function PartnerPanelPage() {
           </Card>
         </TabsContent>
 
-        {/* Analytics Tab */}
-        <TabsContent value="analytics">
-          <Card>
-            <CardHeader>
-              <CardTitle>Analytics & Insights</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-12">
-                <TrendingUp className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-medium mb-2">Advanced Analytics</h3>
-                <p className="text-muted-foreground mb-4">
-                  Detailed analytics and reporting features coming soon
-                </p>
-                <Button variant="outline">View Reports</Button>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Settings Tab */}
-        <TabsContent value="settings">
-          <Card>
-            <CardHeader>
-              <CardTitle>Partner Settings</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-12">
-                <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-medium mb-2">Account Settings</h3>
-                <p className="text-muted-foreground mb-4">
-                  Partner account management features coming soon
-                </p>
-                <Button variant="outline">Manage Account</Button>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
       </Tabs>
     </div>
   )

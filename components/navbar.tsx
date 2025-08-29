@@ -38,7 +38,7 @@ export function Navbar() {
               <Link href="/search" className="text-sm font-medium hover:text-primary transition-colors">
                 Rooms
               </Link>
-              {(!isSignedIn || userRole !== 'partner') && (
+              {(!isSignedIn || (userRole !== 'partner' && userRole !== 'admin')) && (
                 <Link href="/partner/register" className="text-sm font-medium hover:text-primary transition-colors">
                   Become A Partner
                 </Link>
@@ -129,7 +129,7 @@ export function Navbar() {
               >
                 Rooms
               </Link>
-              {(!isSignedIn || userRole !== 'partner') && (
+              {(!isSignedIn || (userRole !== 'partner' && userRole !== 'admin')) && (
                 <Link
                   href="/partner/register"
                   className="block px-3 py-2 text-base font-medium hover:bg-accent rounded-md"

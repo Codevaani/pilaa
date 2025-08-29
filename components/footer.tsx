@@ -78,11 +78,11 @@ export function Footer() {
                   List Your Property
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link href={"/partner/login" as any} className="text-muted-foreground hover:text-primary transition-colors">
                   Partner Login
                 </Link>
-              </li>
+              </li> */}
               <li>
                 <Link href={"/partner/resources" as any} className="text-muted-foreground hover:text-primary transition-colors">
                   Resources

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import Image from "next/image"
 import { Camera, Mail, Phone, MapPin, Calendar } from "lucide-react"
 import { useUser } from "@clerk/nextjs"
@@ -10,22 +10,108 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
 
-// Mock additional user data (in real app, this would come from your database)
-const mockUserStats = {
-  totalBookings: 12,
-  totalSpent: 125000,
-  membershipLevel: "Gold",
-  joinedDate: "January 2024",
+interface UserStats {
+  totalBookings: number
+  totalSpent: number
+  membershipLevel: string
+  averageRating: number
+}
+
+interface RecentActivity {
+  id: string
+  type: string
+  title: string
+  description: string
+  date: string
 }
 
 export default function AccountProfilePage() {
   const { user, isLoaded } = useUser()
   const [isEditing, setIsEditing] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
     phone: "",
   })
+  const [userStats, setUserStats] = useState<UserStats>({
+    totalBookings: 0,
+    totalSpent: 0,
+    membershipLevel: "Bronze",
+    averageRating: 0,
+  })
+  const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([])
+
+  // Fetch user stats and activity
+  const fetchUserData = useCallback(async () => {
+    if (!user) return
+    
+    try {
+      // Fetch user stats from bookings API
+      const response = await fetch('/api/user/bookings')
+      if (response.ok) {
+        const data = await response.json()
+        const stats = data.stats
+        
+        // Calculate membership level based on total bookings
+        let membershipLevel = "Bronze"
+        if (stats.total >= 20) {
+          membershipLevel = "Platinum"
+        } else if (stats.total >= 10) {
+          membershipLevel = "Gold"
+        } else if (stats.total >= 5) {
+          membershipLevel = "Silver"
+        }
+        
+        setUserStats({
+          totalBookings: stats.total || 0,
+          totalSpent: stats.totalSpent || 0,
+          membershipLevel,
+          averageRating: 4.5, // You can calculate this from reviews API
+        })
+        
+        // Generate recent activity from bookings
+        const bookings = data.data || []
+        const activities: RecentActivity[] = bookings
+          .slice(0, 3)
+          .map((booking: any, index: number) => ({
+            id: booking.id,
+            type: 'booking',
+            title: `Booking ${booking.status === 'confirmed' ? 'Confirmed' : booking.status}`,
+            description: `${booking.propertyName} - ${booking.checkIn}`,
+            date: getRelativeTime(new Date(booking.bookingDate || Date.now()))
+          }))
+        
+        setRecentActivity(activities)
+      }
+    } catch (error) {
+      console.error('Failed to fetch user data:', error)
+    } finally {
+      setLoading(false)
+    }
+  }, [user])
+
+  // Helper function to format relative time
+  const getRelativeTime = (date: Date) => {
+    const now = new Date()
+    const diffInMs = now.getTime() - date.getTime()
+    const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24))
+    
+    if (diffInDays === 0) return 'Today'
+    if (diffInDays === 1) return '1 day ago'
+    if (diffInDays < 7) return `${diffInDays} days ago`
+    if (diffInDays < 30) return `${Math.floor(diffInDays / 7)} weeks ago`
+    return `${Math.floor(diffInDays / 30)} months ago`
+  }
+
+  // Fetch user data when user is loaded
+  useEffect(() => {
+    if (user) {
+      fetchUserData()
+    } else {
+      setLoading(false)
+    }
+  }, [user, fetchUserData])
 
   // Update form data when user loads
   useEffect(() => {
@@ -158,7 +244,7 @@ export default function AccountProfilePage() {
               </div>
               <div className="text-center">
                 <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">
-                  {mockUserStats.membershipLevel} Member
+                  {loading ? "Loading..." : userStats.membershipLevel} Member
                 </Badge>
               </div>
             </div>
@@ -241,7 +327,7 @@ export default function AccountProfilePage() {
                           {user.createdAt ? new Date(user.createdAt).toLocaleDateString('en-IN', {
                             year: 'numeric',
                             month: 'long'
-                          }) : mockUserStats.joinedDate}
+                          }) : "January 2024"}
                         </p>
                       </div>
                     </div>
@@ -258,19 +344,31 @@ export default function AccountProfilePage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card>
           <CardContent className="p-6 text-center">
-            <div className="text-2xl font-bold text-primary">{mockUserStats.totalBookings}</div>
+            {loading ? (
+              <Skeleton className="h-8 w-16 mx-auto mb-2" />
+            ) : (
+              <div className="text-2xl font-bold text-primary">{userStats.totalBookings}</div>
+            )}
             <p className="text-muted-foreground">Total Bookings</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-6 text-center">
-            <div className="text-2xl font-bold text-primary">₹{mockUserStats.totalSpent.toLocaleString()}</div>
+            {loading ? (
+              <Skeleton className="h-8 w-20 mx-auto mb-2" />
+            ) : (
+              <div className="text-2xl font-bold text-primary">₹{userStats.totalSpent.toLocaleString()}</div>
+            )}
             <p className="text-muted-foreground">Total Spent</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-6 text-center">
-            <div className="text-2xl font-bold text-primary">4.8</div>
+            {loading ? (
+              <Skeleton className="h-8 w-12 mx-auto mb-2" />
+            ) : (
+              <div className="text-2xl font-bold text-primary">{userStats.averageRating.toFixed(1)}</div>
+            )}
             <p className="text-muted-foreground">Average Rating Given</p>
           </CardContent>
         </Card>
@@ -283,30 +381,36 @@ export default function AccountProfilePage() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <div className="flex items-center space-x-4 p-4 bg-muted/50 rounded-lg">
-              <div className="w-2 h-2 bg-primary rounded-full"></div>
-              <div className="flex-1">
-                <p className="font-medium">Booking Confirmed</p>
-                <p className="text-sm text-muted-foreground">The Grand Palace Hotel - August 25, 2024</p>
+            {loading ? (
+              <>                
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="flex items-center space-x-4 p-4 bg-muted/50 rounded-lg">
+                    <Skeleton className="w-2 h-2 rounded-full" />
+                    <div className="flex-1">
+                      <Skeleton className="h-4 w-32 mb-1" />
+                      <Skeleton className="h-3 w-48" />
+                    </div>
+                    <Skeleton className="h-3 w-16" />
+                  </div>
+                ))}
+              </>
+            ) : recentActivity.length > 0 ? (
+              recentActivity.map((activity) => (
+                <div key={activity.id} className="flex items-center space-x-4 p-4 bg-muted/50 rounded-lg">
+                  <div className="w-2 h-2 bg-primary rounded-full"></div>
+                  <div className="flex-1">
+                    <p className="font-medium">{activity.title}</p>
+                    <p className="text-sm text-muted-foreground">{activity.description}</p>
+                  </div>
+                  <span className="text-sm text-muted-foreground">{activity.date}</span>
+                </div>
+              ))
+            ) : (
+              <div className="text-center py-8">
+                <p className="text-muted-foreground">No recent activity</p>
+                <p className="text-sm text-muted-foreground mt-1">Your booking activity will appear here</p>
               </div>
-              <span className="text-sm text-muted-foreground">2 days ago</span>
-            </div>
-            <div className="flex items-center space-x-4 p-4 bg-muted/50 rounded-lg">
-              <div className="w-2 h-2 bg-primary rounded-full"></div>
-              <div className="flex-1">
-                <p className="font-medium">Review Submitted</p>
-                <p className="text-sm text-muted-foreground">Seaside Resort & Spa - 5 stars</p>
-              </div>
-              <span className="text-sm text-muted-foreground">1 week ago</span>
-            </div>
-            <div className="flex items-center space-x-4 p-4 bg-muted/50 rounded-lg">
-              <div className="w-2 h-2 bg-primary rounded-full"></div>
-              <div className="flex-1">
-                <p className="font-medium">Profile Updated</p>
-                <p className="text-sm text-muted-foreground">Contact information updated</p>
-              </div>
-              <span className="text-sm text-muted-foreground">2 weeks ago</span>
-            </div>
+            )}
           </div>
         </CardContent>
       </Card>

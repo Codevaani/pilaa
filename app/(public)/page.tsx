@@ -47,7 +47,7 @@ function HeroSection() {
         <div className="absolute inset-0 bg-black/40" />
       </div>
       
-      <div className="relative z-10 text-center text-white max-w-4xl mx-auto px-4">
+      <div className="relative z-10 text-center text-white w-full px-4">
         <h1 className="text-4xl md:text-6xl font-bold mb-6">
           Find Your Perfect Stay
         </h1>
@@ -55,7 +55,7 @@ function HeroSection() {
           Discover amazing hotels, resorts, and unique stays around the world
         </p>
         
-        <div className="max-w-3xl mx-auto">
+        <div className="w-full max-w-7xl mx-auto">
           <SearchBar variant="hero" />
         </div>
       </div>

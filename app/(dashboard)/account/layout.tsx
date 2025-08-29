@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { User, BookOpen, Heart, Settings, LogOut } from "lucide-react"
+import { User, BookOpen, Heart, LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Navbar } from "@/components/navbar"
@@ -23,11 +23,6 @@ const sidebarItems = [
     title: "Saved Hotels",
     href: "/account/saved",
     icon: Heart,
-  },
-  {
-    title: "Settings",
-    href: "/account/settings",
-    icon: Settings,
   },
 ]
 

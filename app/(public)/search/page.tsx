@@ -279,11 +279,26 @@ export default function SearchPage() {
   const [hotels, setHotels] = useState<Hotel[]>([])
   const [loading, setLoading] = useState(true)
   const [totalResults, setTotalResults] = useState(0)
+  
+  // Get search criteria for display
+  const searchCriteria = {
+    location: searchParams.get('location') || searchParams.get('city') || 'All locations',
+    checkIn: searchParams.get('checkIn') || '',
+    checkOut: searchParams.get('checkOut') || '',
+    adults: searchParams.get('adults') || '2',
+    children: searchParams.get('children') || '0'
+  }
 
   const fetchHotels = useCallback(async () => {
     try {
       const params = new URLSearchParams()
-      if (searchParams.get('city')) params.set('city', searchParams.get('city')!)
+      // Handle both 'location' and 'city' parameters for backward compatibility
+      const location = searchParams.get('location') || searchParams.get('city')
+      if (location) params.set('city', location)
+      if (searchParams.get('checkIn')) params.set('checkIn', searchParams.get('checkIn')!)
+      if (searchParams.get('checkOut')) params.set('checkOut', searchParams.get('checkOut')!)
+      if (searchParams.get('adults')) params.set('adults', searchParams.get('adults')!)
+      if (searchParams.get('children')) params.set('children', searchParams.get('children')!)
       if (searchParams.get('minPrice')) params.set('minPrice', searchParams.get('minPrice')!)
       if (searchParams.get('maxPrice')) params.set('maxPrice', searchParams.get('maxPrice')!)
       if (searchParams.get('rating')) params.set('rating', searchParams.get('rating')!)
@@ -292,7 +307,7 @@ export default function SearchPage() {
       if (response.ok) {
         const data = await response.json()
         setHotels(data.data || [])
-        setTotalResults(data.pagination?.total || 0)
+        setTotalResults(data.pagination?.total || data.data?.length || 0)
       }
     } catch (error) {
       console.error('Failed to fetch hotels')
@@ -310,11 +325,34 @@ export default function SearchPage() {
       {/* Search Bar */}
       <div className="border-b bg-muted/30 py-4">
         <div className="container mx-auto px-4">
-          <SearchBar />
+          <SearchBar 
+            initialData={{
+              location: searchCriteria.location !== 'All locations' ? searchCriteria.location : '',
+              checkIn: searchCriteria.checkIn,
+              checkOut: searchCriteria.checkOut,
+              guests: {
+                adults: parseInt(searchCriteria.adults),
+                children: parseInt(searchCriteria.children)
+              }
+            }}
+          />
         </div>
       </div>
 
       <div className="container mx-auto px-4 py-8">
+        {/* Search Criteria Display */}
+        {searchCriteria.location !== 'All locations' && (
+          <div className="mb-6">
+            <h1 className="text-2xl font-bold mb-2">Hotels in {searchCriteria.location}</h1>
+            <div className="flex items-center space-x-4 text-sm text-muted-foreground">
+              {searchCriteria.checkIn && searchCriteria.checkOut && (
+                <span>{searchCriteria.checkIn} to {searchCriteria.checkOut}</span>
+              )}
+              <span>{searchCriteria.adults} adults{parseInt(searchCriteria.children) > 0 ? `, ${searchCriteria.children} children` : ''}</span>
+            </div>
+          </div>
+        )}
+        
         <div className="flex gap-8">
           {/* Desktop Filters */}
           <div className="hidden lg:block w-80">

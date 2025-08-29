@@ -26,7 +26,9 @@ export async function GET() {
       slug: property.name.toLowerCase().replace(/\s+/g, '-'),
       location: `${property.address?.city || ''}, ${property.address?.state || ''}`,
       type: property.propertyType || 'hotel',
-      images: property.images || ['https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=400&h=300&fit=crop'],
+      images: property.images && property.images.length > 0 
+        ? property.images 
+        : ['https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=400&h=300&fit=crop'],
       status: property.status,
       rating: property.rating || 0,
       reviewCount: 0,

@@ -9,18 +9,16 @@ import {
   Building2,
   Plus,
   Calendar,
-  BarChart3,
-  Settings,
+  BedDouble,
   LogOut
 } from 'lucide-react'
 
 const navigation = [
   { name: 'Dashboard', href: '/partner' as const, icon: LayoutDashboard },
   { name: 'My Properties', href: '/partner/properties' as const, icon: Building2 },
+  { name: 'My Rooms', href: '/partner/rooms' as const, icon: BedDouble },
   { name: 'Add Property', href: '/partner/properties/add' as const, icon: Plus },
   { name: 'Bookings', href: '/partner/bookings' as const, icon: Calendar },
-  { name: 'Analytics', href: '/partner/analytics' as const, icon: BarChart3 },
-  { name: 'Settings', href: '/partner/settings' as const, icon: Settings },
 ]
 
 export function PartnerSidebar() {

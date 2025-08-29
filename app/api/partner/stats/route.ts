@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import dbConnect from '@/lib/mongodb'
 import Property from '@/models/Property'
-import Booking from '@/models/Booking'
+import BookingTemp from '@/models/BookingTemp'
 
 export async function GET() {
   try {
@@ -21,9 +21,9 @@ export async function GET() {
     const propertyIds = partnerProperties.map(p => p._id)
     
     const [totalBookings, totalRevenue] = await Promise.all([
-      Booking.countDocuments({ propertyId: { $in: propertyIds } }),
-      Booking.aggregate([
-        { $match: { propertyId: { $in: propertyIds } } },
+      BookingTemp.countDocuments({ propertyId: { $in: propertyIds.map(id => id.toString()) } }),
+      BookingTemp.aggregate([
+        { $match: { propertyId: { $in: propertyIds.map(id => id.toString()) } } },
         { $group: { _id: null, total: { $sum: '$totalAmount' } } }
       ])
     ])

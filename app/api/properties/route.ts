@@ -18,9 +18,9 @@ export async function POST(request: Request) {
     console.log('Received form data:', body)
     
     // Validate required fields
-    if (!body.name || !body.description) {
+    if (!body.name || !body.description || !body.city || !body.state) {
       return NextResponse.json(
-        { message: 'Name and description are required', success: false },
+        { message: 'Name, description, city, and state are required', success: false },
         { status: 400 }
       )
     }
@@ -42,10 +42,12 @@ export async function POST(request: Request) {
       },
       partnerId: userId,
       amenities: body.amenities,
-      images: ['https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=400&h=300&fit=crop'],
+      images: body.images && body.images.length > 0 
+        ? body.images 
+        : ['https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=400&h=300&fit=crop'],
       priceRange: {
-        min: body.rooms[0]?.price || 0,
-        max: body.rooms[0]?.price || 0
+        min: (body.rooms && body.rooms.length > 0) ? body.rooms[0].price : 0,
+        max: (body.rooms && body.rooms.length > 0) ? body.rooms[0].price : 0
       },
       status: 'active',
       rating: 0,

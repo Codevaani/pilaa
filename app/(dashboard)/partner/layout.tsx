@@ -3,7 +3,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { LayoutDashboard, Building, Calendar, Plus, BarChart3, Settings, LogOut } from "lucide-react"
+import { LayoutDashboard, Building, Calendar, Plus, BedDouble, LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Navbar } from "@/components/navbar"
@@ -21,6 +21,11 @@ const sidebarItems = [
     icon: Building,
   },
   {
+    title: "My Rooms",
+    href: "/partner/rooms" as const,
+    icon: BedDouble,
+  },
+  {
     title: "Add Property",
     href: "/partner/add-property" as const,
     icon: Plus,
@@ -29,16 +34,6 @@ const sidebarItems = [
     title: "Bookings",
     href: "/partner/bookings" as const,
     icon: Calendar,
-  },
-  {
-    title: "Analytics",
-    href: "/partner/analytics" as const,
-    icon: BarChart3,
-  },
-  {
-    title: "Settings",
-    href: "/partner/settings" as const,
-    icon: Settings,
   },
 ]
 

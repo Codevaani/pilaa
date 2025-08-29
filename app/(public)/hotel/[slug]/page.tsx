@@ -62,28 +62,36 @@ interface HotelData {
 }
 
 function ImageGallery({ images }: { images: string[] }) {
+  // Filter out empty or invalid images and provide a fallback
+  const validImages = images?.filter(img => img && typeof img === 'string' && img.trim() !== '') || []
+  
+  // If no valid images, use a fallback
+  const displayImages = validImages.length > 0 
+    ? validImages 
+    : ['https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=600&fit=crop']
+
   const [currentImage, setCurrentImage] = useState(0)
 
   const nextImage = () => {
-    setCurrentImage((prev) => (prev + 1) % images.length)
+    setCurrentImage((prev) => (prev + 1) % displayImages.length)
   }
 
   const prevImage = () => {
-    setCurrentImage((prev) => (prev - 1 + images.length) % images.length)
+    setCurrentImage((prev) => (prev - 1 + displayImages.length) % displayImages.length)
   }
 
   return (
     <div className="relative">
       <div className="relative h-96 md:h-[500px] rounded-2xl overflow-hidden">
         <Image
-          src={images[currentImage]}
+          src={displayImages[currentImage]}
           alt="Hotel image"
           fill
           className="object-cover"
           priority
         />
         
-        {images.length > 1 && (
+        {displayImages.length > 1 && (
           <>
             <Button
               variant="secondary"
@@ -105,7 +113,7 @@ function ImageGallery({ images }: { images: string[] }) {
         )}
 
         <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
-          {images.map((_, index) => (
+          {displayImages.map((_, index) => (
             <button
               key={index}
               className={`w-2 h-2 rounded-full ${
@@ -119,7 +127,7 @@ function ImageGallery({ images }: { images: string[] }) {
 
       {/* Thumbnail strip */}
       <div className="flex space-x-2 mt-4 overflow-x-auto">
-        {images.map((image, index) => (
+        {displayImages.map((image, index) => (
           <button
             key={index}
             className={`relative w-20 h-16 rounded-lg overflow-hidden flex-shrink-0 ${
@@ -169,7 +177,11 @@ function BookingWidget({ property, rooms, selectedRoom, setSelectedRoom }: { pro
         checkIn,
         checkOut,
         guests,
-        totalAmount: selectedRoomData?.price || 0
+        totalAmount: selectedRoomData?.price || 0,
+        propertyName: property.name,
+        roomType: selectedRoomData?.name,
+        location: `${property.address?.city}, ${property.address?.state}`,
+        propertyImage: property.images?.[0]
       }
 
       const response = await fetch('/api/bookings', {
@@ -454,7 +466,7 @@ export default function HotelDetailPage() {
                           <div className="md:w-1/3">
                             <div className="relative h-48 rounded-lg overflow-hidden">
                               <Image
-                                src={room.images[0]}
+                                src={room.images?.[0] && room.images[0].trim() !== "" ? room.images[0] : "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&h=300&fit=crop"}
                                 alt={room.name}
                                 fill
                                 className="object-cover"

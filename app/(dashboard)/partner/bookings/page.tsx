@@ -80,7 +80,7 @@ export default function PartnerBookingsPage() {
       case 'confirmed':
         return 'default'
       case 'pending':
-        return 'secondary'
+        return 'default' // Making pending more prominent with default (blue) styling
       case 'completed':
         return 'outline'
       case 'cancelled':
@@ -93,17 +93,40 @@ export default function PartnerBookingsPage() {
   
 
   const filteredBookings = bookings.filter(booking => {
-    const matchesSearch = booking.guestName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         booking.bookingId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         booking.propertyName.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesSearch = (booking.guestName?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+                         (booking.bookingId?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+                         (booking.propertyName?.toLowerCase() || '').includes(searchTerm.toLowerCase())
     const matchesTab = selectedTab === "all" || booking.status === selectedTab
     
     return matchesSearch && matchesTab
   })
 
-  const handleBookingAction = (bookingId: string, action: string) => {
-    console.log(`${action} booking ${bookingId}`)
-    alert(`Booking ${action} action performed!`)
+  const handleBookingAction = async (bookingId: string, action: string) => {
+    try {
+      const response = await fetch(`/api/partner/bookings/${bookingId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action })
+      })
+      
+      if (response.ok) {
+        const statusMap: Record<string, string> = {
+          confirm: 'confirmed',
+          reject: 'cancelled',
+          complete: 'completed'
+        }
+        
+        const newStatus = statusMap[action] || 'cancelled'
+        
+        setBookings(prev => prev.map(booking => 
+          booking.id === bookingId || booking._id === bookingId
+            ? { ...booking, status: newStatus }
+            : booking
+        ))
+      }
+    } catch (error) {
+      console.error('Failed to update booking')
+    }
   }
 
   if (!isLoaded || loading) {
@@ -264,7 +287,7 @@ export default function PartnerBookingsPage() {
                           <div>
                             <p className="text-sm font-medium">Guests</p>
                             <p className="text-sm text-muted-foreground">
-                              {booking.guests.adults}A, {booking.guests.children}C
+                              {booking.guests?.adults || 0}A, {booking.guests?.children || 0}C
                             </p>
                           </div>
                         </div>
@@ -297,53 +320,38 @@ export default function PartnerBookingsPage() {
 
                       <div className="flex items-center justify-between text-xs text-muted-foreground">
                         <span>Booked on: {booking.bookingDate}</span>
-                        <span>Commission: ₹{booking.commission.toLocaleString()}</span>
+                        <span>Commission: ₹{(booking.commission || 0).toLocaleString()}</span>
                       </div>
                     </div>
 
                     {/* Actions */}
                     <div className="flex flex-col space-y-2 lg:ml-6">
-                      <Button size="sm" variant="outline">
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => alert(`Booking Details:\n\nGuest: ${booking.guestName}\nID: ${booking._id || booking.id}\nProperty: ${booking.propertyName}\nStatus: ${booking.status}\nAmount: ₹${(booking.amount || booking.totalAmount || 0).toLocaleString()}\nCheck-in: ${booking.checkIn}\nCheck-out: ${booking.checkOut}\nGuests: ${booking.guests?.adults || 0}A, ${booking.guests?.children || 0}C\nEmail: ${booking.guestEmail}\nPhone: ${booking.guestPhone}`)}
+                      >
                         <Eye className="h-4 w-4 mr-2" />
                         View Details
                       </Button>
                       
-                      {booking.status === 'pending' && (
-                        <>
-                          <Button 
-                            size="sm"
-                            onClick={() => handleBookingAction(booking.id, 'confirm')}
-                          >
-                            <CheckCircle className="h-4 w-4 mr-2" />
-                            Confirm
-                          </Button>
-                          <Button 
-                            size="sm" 
-                            variant="outline"
-                            onClick={() => handleBookingAction(booking.id, 'reject')}
-                            className="text-destructive hover:text-destructive"
-                          >
-                            <XCircle className="h-4 w-4 mr-2" />
-                            Reject
-                          </Button>
-                        </>
-                      )}
+                      <select
+                        onChange={(e) => {
+                          if (e.target.value) {
+                            handleBookingAction(booking.id, e.target.value)
+                            e.target.value = ''
+                          }
+                        }}
+                        className="border border-gray-300 rounded-md px-3 py-2 bg-white text-sm min-w-[120px] cursor-pointer"
+                      >
+                        <option value="">Change Status</option>
+                        {booking.status === 'pending' && <option value="confirm">Confirm</option>}
+                        {booking.status === 'pending' && <option value="reject">Reject</option>}
+                        {booking.status === 'confirmed' && <option value="complete">Complete</option>}
+                        {booking.status !== 'cancelled' && <option value="reject">Cancel</option>}
+                      </select>
                       
-                      {booking.status === 'confirmed' && (
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          onClick={() => handleBookingAction(booking.id, 'modify')}
-                        >
-                          <RefreshCw className="h-4 w-4 mr-2" />
-                          Modify
-                        </Button>
-                      )}
-                      
-                      <Button size="sm" variant="outline">
-                        <MessageCircle className="h-4 w-4 mr-2" />
-                        Contact Guest
-                      </Button>
+
                       
                       <Button size="sm" variant="outline">
                         <Download className="h-4 w-4 mr-2" />
